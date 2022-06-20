@@ -134,9 +134,12 @@ class ImageViewer(QWidget):
             x = round(tela_x / pixm_x, 3)
             y = round(tela_y / pixm_y, 3)
 
-            minimo = x if max(x, y) > .5 else .5
+            minimo = (x if max(x, y) > .5 else .5) - .1
 
-            self.m_scale = minimo - .1
+            if tela_x > 800 and minimo > 1:
+                minimo = (max(tela_x, tela_y) - max(pixm_x, pixm_y)) / max(pixm_x, pixm_y) + .1
+
+            self.m_scale = minimo
 
             self.update()
         except ZeroDivisionError:
