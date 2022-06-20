@@ -2,7 +2,7 @@
 import os
 import sys
 from urllib.request import urlretrieve
-
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
 
 from src.app import DoImageViewer
@@ -31,7 +31,12 @@ def main() -> None:
 
     # noinspection PyUnresolvedReferences
     app.aboutToQuit.connect(lambda: on_exit(is_url))
+
     window = DoImageViewer(app, caminho_arquivo)
+
+    if len(sys.argv) == 3:
+        window.setWindowState(Qt.WindowState.WindowMaximized)
+
     window.show()
     sys.exit(app.exec())
 

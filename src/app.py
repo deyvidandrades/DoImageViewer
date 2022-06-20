@@ -3,7 +3,7 @@ from pathlib import Path
 from subprocess import Popen
 
 from PIL import Image
-from PyQt6.QtCore import QDir, Qt, QSize
+from PyQt6.QtCore import QDir, Qt, QSize, QEvent
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu, QLabel, QHBoxLayout, QWidget, QFileDialog, QApplication, QToolBar, \
     QSizePolicy
@@ -63,6 +63,13 @@ class DoImageViewer(QMainWindow):
 
         self.__carregar_imagem()
         self.setWindowTitle("Do Image Viewer v2.0")
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.Type.WindowStateChange:
+            if event.oldState() and Qt.WindowState.WindowMinimized:
+                self.__viewer.centralizar()
+            elif event.oldState() == Qt.WindowState.WindowNoState or self.windowState() == Qt.WindowState.WindowMaximized:
+                self.__viewer.centralizar()
 
     def __configurar_gui(self):
         self.label_left = QLabelClick()
