@@ -32,7 +32,7 @@ class DoImageViewer(QMainWindow):
         self.setWindowIcon(QIcon(QPixmap(self.__RESOURCES + 'image-svgrepo-com.svg')))
         self.setWindowTitle("Do Image Viewer v2.0")
         self.setAutoFillBackground(True)
-        self.resize(800, 900)
+        self.resize(800, 950)
 
         # variáveis de controle
         self.__viewer = ImageViewer(parent=self)
@@ -62,13 +62,14 @@ class DoImageViewer(QMainWindow):
         self.__configurar_status_bar()
 
         self.__carregar_imagem()
-        self.setWindowTitle("Do Image Viewer v2.0")
+        self.setWindowTitle("Do Image Viewer v2.0.4")
 
     def changeEvent(self, event):
         if event.type() == QEvent.Type.WindowStateChange:
             if event.oldState() and Qt.WindowState.WindowMinimized:
                 self.__viewer.centralizar()
-            elif event.oldState() == Qt.WindowState.WindowNoState or self.windowState() == Qt.WindowState.WindowMaximized:
+            elif event.oldState() == Qt.WindowState.WindowNoState or \
+                    self.windowState() == Qt.WindowState.WindowMaximized:
                 self.__viewer.centralizar()
 
     def __configurar_gui(self):
