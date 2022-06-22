@@ -32,7 +32,9 @@ class DoImageViewer(QMainWindow):
         self.setWindowIcon(QIcon(QPixmap(self.__RESOURCES + 'image-svgrepo-com.svg')))
         self.setWindowTitle("Do Image Viewer v2.0")
         self.setAutoFillBackground(True)
-        self.resize(800, 950)
+
+        tela = self.__app.primaryScreen().size()
+        self.resize(int(tela.width() * .45), int(tela.height() * .9))
 
         # variáveis de controle
         self.__viewer = ImageViewer(parent=self)
