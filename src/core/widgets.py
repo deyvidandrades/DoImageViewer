@@ -134,10 +134,27 @@ class ImageViewer(QWidget):
             x = round(tela_x / pixm_x, 3)
             y = round(tela_y / pixm_y, 3)
 
-            minimo = (x if max(x, y) > .5 else .5) - .1
+            # minimo = (x if max(x, y) > .5 else .5) - .1
+            if pixm_x > pixm_y:
+                minimo = (x if x > .5 else .5) - .1
+            else:
+                minimo = (y if y > .5 else .5) - .1
 
-            if tela_x > 800 and minimo > 1:
-                minimo = (max(tela_x, tela_y) - max(pixm_x, pixm_y)) / max(pixm_x, pixm_y) + .1
+            if minimo > 1:
+                minimo = 1
+
+            # if tela_x > 800 and minimo > 1:
+            #     minimo_maximizado = minimo - (
+            #             (max(tela_x, tela_y) - max(pixm_x, pixm_y)) / max(pixm_x, pixm_y) + .1
+            #     ) + .4
+            #
+            #     if minimo_maximizado > 0:
+            #         minimo = minimo_maximizado
+
+            #     if pixm_x > pixm_y:
+            #         minimo = ((tela_x - pixm_x) / pixm_x + .1)
+            #     else:
+            #         minimo = ((tela_y - pixm_y) / pixm_y + .1)
 
             self.m_scale = minimo
 
