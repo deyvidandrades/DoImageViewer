@@ -404,7 +404,7 @@ class DoImageViewer(QMainWindow):
         )
         if filename != "":
             self.__viewer.m_pixmap.save(filename)
-            self.__caminho =filename
+            self.__caminho = filename
             self.__carregar_imagem()
 
     def __salvar_imagem_como(self):
@@ -416,7 +416,7 @@ class DoImageViewer(QMainWindow):
         )
         if filename != "":
             self.__viewer.m_pixmap.save(filename)
-            self.__caminho =filename
+            self.__caminho = filename
             self.__carregar_imagem()
 
     def __abrir_info_dialog(self):
