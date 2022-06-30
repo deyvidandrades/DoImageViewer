@@ -52,6 +52,7 @@ class DoImageViewer(QMainWindow):
         # configuração do layout principal
         self.__layout_principal = QHBoxLayout()
         self.__layout_principal.setContentsMargins(5, 0, 5, 0)
+        self.setAcceptDrops(True)
 
         self.__centralWidget = QWidget(self)
         self.setCentralWidget(self.__centralWidget)
@@ -73,6 +74,19 @@ class DoImageViewer(QMainWindow):
             elif event.oldState() == Qt.WindowState.WindowNoState or \
                     self.windowState() == Qt.WindowState.WindowMaximized:
                 self.__viewer.centralizar()
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        files = [u.toLocalFile() for u in event.mimeData().urls()]
+
+        if files:
+            self.__caminho = files[0]
+            self.__carregar_imagem()
 
     def __configurar_gui(self):
         self.label_left = QLabelClick()
