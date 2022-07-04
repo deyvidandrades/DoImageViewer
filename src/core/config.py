@@ -38,6 +38,11 @@ class Config:
             return self.__config.getboolean(secao, opcao)
         return False
 
+    def get_window_info(self, opcao: str = None) -> (int, int):
+        config = self.__config.get('window', opcao).split(',')
+
+        return int(config[0]), int(config[1])
+
     def set_config(self, secao: str = None, opcao: str = None, valor: str = None) -> None:
         """
         Salvar as configurações no arquivo .ini

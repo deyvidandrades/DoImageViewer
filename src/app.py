@@ -3,7 +3,7 @@ from pathlib import Path
 from subprocess import Popen
 
 from PIL import Image
-from PyQt6.QtCore import QDir, Qt, QSize, QEvent
+from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu, QLabel, QHBoxLayout, QWidget, QFileDialog, QApplication, QToolBar, \
     QSizePolicy
@@ -35,6 +35,9 @@ class DoImageViewer(QMainWindow):
 
         tela = self.__app.primaryScreen().size()
         self.resize(int(tela.width() * .45), int(tela.height() * .9))
+
+        self.move(QPoint(config.get_window_info('posicao')[0], config.get_window_info('posicao')[1]))
+        self.resize(QSize(config.get_window_info('tamanho')[0], config.get_window_info('tamanho')[1]))
 
         # variáveis de controle
         self.__viewer = ImageViewer(parent=self)

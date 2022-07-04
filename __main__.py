@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
 
 from src.app import DoImageViewer
+from src.core.config import Config
 
 CAMINHO_RES = os.path.join(f'{os.getcwd()}/src/res/tmp.jpg')
 
@@ -44,6 +45,20 @@ def main() -> None:
 def on_exit(is_url: bool):
     if is_url:
         os.remove(CAMINHO_RES)
+
+    screen = QApplication.screenAt(QApplication.activeWindow().pos())
+
+    Config().set_config('window', 'nome', screen.name())
+
+    Config().set_config(
+        'window', 'tamanho',
+        f'{QApplication.activeWindow().size().width()},{QApplication.activeWindow().size().height()}'
+    )
+
+    Config().set_config(
+        'window', 'posicao',
+        f'{QApplication.activeWindow().pos().x()},{QApplication.activeWindow().pos().y()}'
+    )
 
 
 if __name__ == '__main__':

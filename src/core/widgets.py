@@ -44,6 +44,7 @@ class ImageViewer(QWidget):
 
     def mousePressEvent(self, mouse_event: QMouseEvent):
         self.m_reference = mouse_event.pos()
+        # if mouse_event.button() == Qt.MouseButton.LeftButton:
         self.__arrastando_imagem = True
 
     def mouseReleaseEvent(self, mouse_event: QMouseEvent):
