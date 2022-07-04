@@ -226,7 +226,7 @@ class DoImageViewer(QMainWindow):
         sobre = QAction("&Sobre", self)
         sobre.triggered.connect(self.__abrir_info_dialog)
 
-        editar_gimp = QAction("&AEditar com Gimp", self)
+        editar_gimp = QAction("&Editar com Gimp", self)
         editar_gimp.triggered.connect(self.__editar_gimp)
 
         menu_ajuda = QMenu("&Ajuda", self)
