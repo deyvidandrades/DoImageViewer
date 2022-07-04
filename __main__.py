@@ -38,6 +38,7 @@ def main() -> None:
     if len(sys.argv) == 3:
         window.setWindowState(Qt.WindowState.WindowMaximized)
 
+    Config().set_config('window', 'numero', str(len(QApplication.screens())))
     window.show()
     sys.exit(app.exec())
 

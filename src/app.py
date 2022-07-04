@@ -39,6 +39,12 @@ class DoImageViewer(QMainWindow):
         self.move(QPoint(config.get_window_info('posicao')[0], config.get_window_info('posicao')[1]))
         self.resize(QSize(config.get_window_info('tamanho')[0], config.get_window_info('tamanho')[1]))
 
+        # verificar se a janela está em um monitor desconectado e movendo para o centro da tela
+        if config.get_window_info('posicao')[0] > self.screen().size().width() and int(
+                config.get_config('window', 'numero')) == 1:
+            self.resize(int(tela.width() * .45), int(tela.height() * .9))
+            self.move(QPoint(int(tela.width() / 2), int(tela.height() / 2)))
+
         # variáveis de controle
         self.__viewer = ImageViewer(parent=self)
         self.__caminho = caminho
