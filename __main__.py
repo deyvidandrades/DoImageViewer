@@ -47,19 +47,22 @@ def on_exit(is_url: bool):
     if is_url:
         os.remove(CAMINHO_RES)
 
-    screen = QApplication.screenAt(QApplication.activeWindow().pos())
+    try:
+        screen = QApplication.screenAt(QApplication.activeWindow().pos())
 
-    Config().set_config('window', 'nome', screen.name())
+        Config().set_config('window', 'nome', screen.name())
 
-    Config().set_config(
-        'window', 'tamanho',
-        f'{QApplication.activeWindow().size().width()},{QApplication.activeWindow().size().height()}'
-    )
+        Config().set_config(
+            'window', 'tamanho',
+            f'{QApplication.activeWindow().size().width()},{QApplication.activeWindow().size().height()}'
+        )
 
-    Config().set_config(
-        'window', 'posicao',
-        f'{QApplication.activeWindow().pos().x()},{QApplication.activeWindow().pos().y()}'
-    )
+        Config().set_config(
+            'window', 'posicao',
+            f'{QApplication.activeWindow().pos().x()},{QApplication.activeWindow().pos().y()}'
+        )
+    except AttributeError:
+        pass
 
 
 if __name__ == '__main__':
