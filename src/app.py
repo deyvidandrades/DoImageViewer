@@ -187,6 +187,11 @@ class DoImageViewer(QMainWindow):
         imagem_anterior.setIcon(QIcon(self.__RESOURCES + 'arrow-left-svgrepo-com.svg'))
         imagem_anterior.triggered.connect(lambda: self.__mudar_imagem('esq'))
 
+        recarregar_imagem = QAction("Recarregar imagem",self)
+        recarregar_imagem.setShortcut("f5")
+        recarregar_imagem.setIcon(QIcon(self.__RESOURCES + 'refresh-svgrepo-com.svg'))
+        recarregar_imagem.triggered.connect(lambda: self.__recarregar_imagem())
+
         girar_dir = QAction("Girar em Sentido Horário", self)
         girar_dir.setShortcut("Ctrl+Right")
         girar_dir.setIcon(QIcon(self.__RESOURCES + 'redo-svgrepo-com.svg'))
@@ -215,12 +220,13 @@ class DoImageViewer(QMainWindow):
         menu_imagem.addAction(proxima_imagem)
         menu_imagem.addAction(imagem_anterior)
         menu_imagem.addSeparator()
+        menu_imagem.addAction(recarregar_imagem)
+        menu_imagem.addSeparator()
         menu_imagem.addAction(girar_dir)
         menu_imagem.addAction(girar_esq)
         menu_imagem.addSeparator()
         menu_imagem.addAction(inverter_v)
         menu_imagem.addAction(inverter_h)
-        menu_imagem.addSeparator()
 
         # MENU AJUDA
         sobre = QAction("&Sobre", self)
@@ -436,6 +442,11 @@ class DoImageViewer(QMainWindow):
             self.__viewer.m_pixmap.save(filename)
             self.__caminho = filename
             self.__carregar_imagem()
+
+    def __recarregar_imagem(self):
+        filename = f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'
+        self.__caminho = filename
+        self.__carregar_imagem()
 
     def __abrir_info_dialog(self):
         SobreDialog(self).exec()
