@@ -418,13 +418,8 @@ class DoImageViewer(QMainWindow):
         self.__carregar_imagem()
 
     def __salvar_imagem(self):
-        filename, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar foto",
-            self.__info_dir['path'],
-            "Imagens (*.jpg *.jpeg *.png)",
-            self.windowTitle()
-        )
+        filename = f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'
+
         if filename != "":
             self.__viewer.m_pixmap.save(filename)
             self.__caminho = filename
