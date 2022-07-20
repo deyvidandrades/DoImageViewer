@@ -187,7 +187,7 @@ class DoImageViewer(QMainWindow):
         imagem_anterior.setIcon(QIcon(self.__RESOURCES + 'arrow-left-svgrepo-com.svg'))
         imagem_anterior.triggered.connect(lambda: self.__mudar_imagem('esq'))
 
-        recarregar_imagem = QAction("Recarregar imagem",self)
+        recarregar_imagem = QAction("Recarregar imagem", self)
         recarregar_imagem.setShortcut("f5")
         recarregar_imagem.setIcon(QIcon(self.__RESOURCES + 'refresh-svgrepo-com.svg'))
         recarregar_imagem.triggered.connect(lambda: self.__recarregar_imagem())
@@ -416,7 +416,7 @@ class DoImageViewer(QMainWindow):
             self,
             "Abrir foto",
             Config().get_config('editor', 'caminho'),
-            "Imagens (*.jpg *.jpeg *.png)"
+            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
         )
 
         Config().set_config('editor', 'caminho', filename)
