@@ -234,9 +234,9 @@ class QLabelClick(QLabel):
 
 
 class SobreDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, versao: str, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("DoImageViewer")
+        self.setWindowTitle(f"DoImageViewer {versao}")
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.NoButton)
 
         self.layout = QVBoxLayout()

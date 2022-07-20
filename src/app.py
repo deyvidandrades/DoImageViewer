@@ -16,6 +16,7 @@ class DoImageViewer(QMainWindow):
     __CAMINHO = QDir.homePath()
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
+    __VERSAO = 'v2.0.8'
 
     def __init__(self, app: QApplication, caminho: str = ""):
         super().__init__()
@@ -30,7 +31,7 @@ class DoImageViewer(QMainWindow):
         # configurações da tela
         self.setStyleSheet("QMainWindow {background-color: " + self.__BACKGROUND_COLOR + ";color: #f0f0f0;}")
         self.setWindowIcon(QIcon(QPixmap(self.__RESOURCES + 'image-svgrepo-com.svg')))
-        self.setWindowTitle("Do Image Viewer v2.0")
+        self.setWindowTitle(f"Do Image Viewer {self.__VERSAO}")
         self.setAutoFillBackground(True)
 
         tela = self.__app.primaryScreen().size()
@@ -74,7 +75,7 @@ class DoImageViewer(QMainWindow):
         self.__configurar_status_bar()
 
         self.__carregar_imagem()
-        self.setWindowTitle("Do Image Viewer v2.0.4")
+        self.setWindowTitle(f"Do Image Viewer {self.__VERSAO}")
 
     def changeEvent(self, event):
         if event.type() == QEvent.Type.WindowStateChange:
@@ -449,7 +450,7 @@ class DoImageViewer(QMainWindow):
         self.__carregar_imagem()
 
     def __abrir_info_dialog(self):
-        SobreDialog(self).exec()
+        SobreDialog(self.__VERSAO, self).exec()
 
     def __exibir_diretorio(self):
         config = Config().get_config_boolean('editor', 'toolbar_diretorio')
