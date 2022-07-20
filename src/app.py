@@ -6,7 +6,7 @@ from PIL import Image
 from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu, QLabel, QHBoxLayout, QWidget, QFileDialog, QApplication, QToolBar, \
-    QSizePolicy
+    QSizePolicy, QDialog, QMessageBox
 
 from src.core.config import Config
 from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
@@ -462,4 +462,7 @@ class DoImageViewer(QMainWindow):
         Config().set_config('editor', 'toolbar_diretorio', str(self.__diretorio_tool_bar.isVisible()))
 
     def __editar_gimp(self):
-        Popen(['gimp', f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'])
+        try:
+            Popen(['gimp', f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'])
+        except IndexError:
+            QMessageBox.critical(self, "Erro", "Nenhuma imagem carregada.")
