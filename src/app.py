@@ -6,7 +6,7 @@ from PIL import Image
 from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu, QLabel, QHBoxLayout, QWidget, QFileDialog, QApplication, QToolBar, \
-    QSizePolicy, QDialog, QMessageBox
+    QSizePolicy, QMessageBox
 
 from src.core.config import Config
 from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
