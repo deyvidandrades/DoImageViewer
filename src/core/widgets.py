@@ -24,7 +24,7 @@ class ImageViewer(QWidget):
         self.__arrastando_imagem = False
         self.__rotacao = 0
 
-        # Iniciando o traking do cursor e mudando para Pointing
+        # Iniciando o tracking do cursor e mudando para Pointing
         self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.setMouseTracking(True)
 
@@ -60,7 +60,7 @@ class ImageViewer(QWidget):
     def wheelEvent(self, event: QWheelEvent):
         """
         Sobrescrição do método da superclasse
-        :param event: Evento de scroll do mouse
+        :param event: Evento de 'scroll' do mouse
         :return: None
         """
         if event.angleDelta().y() > 0:

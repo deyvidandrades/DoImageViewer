@@ -1,5 +1,5 @@
 """
-Classe responsável pelo gerenciamento de configurações .ini do programa
+Classe responsável pelo gerenciamento de configurações '.ini' do programa
 """
 import os
 from configparser import ConfigParser
@@ -29,10 +29,10 @@ class Config:
 
     def get_config_boolean(self, secao: str = None, opcao: str = None) -> bool:
         """
-        Método de leitura das configurações boleanas
+        Método de leitura das configurações booleanas
         :param secao: .ini section
         :param opcao: .ini option
-        :return: .ini bool value
+        :return: '.ini' bool value
         """
         if secao is not None:
             return self.__config.getboolean(secao, opcao)

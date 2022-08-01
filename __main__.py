@@ -2,6 +2,7 @@
 import os
 import sys
 from urllib.request import urlretrieve
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
 
