@@ -16,7 +16,7 @@ class DoImageViewer(QMainWindow):
     __CAMINHO = QDir.homePath()
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
-    __VERSAO = 'v2.0.8'
+    __VERSAO = 'v1.1.9'
 
     def __init__(self, app: QApplication, caminho: str = ""):
         super().__init__()
