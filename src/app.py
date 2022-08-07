@@ -437,9 +437,10 @@ class DoImageViewer(QMainWindow):
             "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
         )
 
-        Config().set_config('editor', 'caminho', filename)
-        self.__caminho = filename
-        self.__carregar_imagem()
+        if filename != "":
+            Config().set_config('editor', 'caminho', filename)
+            self.__caminho = filename
+            self.__carregar_imagem()
 
     def __salvar_imagem(self):
         filename = f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'
