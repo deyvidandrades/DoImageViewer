@@ -290,7 +290,6 @@ class DoImageViewer(QMainWindow):
         self.statusBar().addWidget(self.label_lista, 0)
 
     def __processar_caminho(self, path) -> str:
-        print(path)
         if path == "":
             return QDir.homePath()
 
