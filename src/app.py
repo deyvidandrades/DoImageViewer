@@ -423,7 +423,7 @@ class DoImageViewer(QMainWindow):
             self,
             "Abrir foto",
             dir_path,
-            "Imagens (*.jpg *.jpeg *.png)"
+            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
         )
 
         self.__caminho = filename
@@ -455,7 +455,7 @@ class DoImageViewer(QMainWindow):
             self,
             "Salvar foto",
             self.__caminho,
-            "Imagens (*.jpg *.jpeg *.png)"
+            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
         )
         if filename != "":
             self.__viewer.m_pixmap.save(filename)
