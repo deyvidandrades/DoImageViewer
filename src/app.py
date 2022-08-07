@@ -13,10 +13,10 @@ from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
 
 
 class DoImageViewer(QMainWindow):
-    __CAMINHO = QDir.homePath()
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
     __VERSAO = 'v1.1.9'
+    __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     def __init__(self, app: QApplication, caminho: str = ""):
         super().__init__()
@@ -48,7 +48,7 @@ class DoImageViewer(QMainWindow):
 
         # variáveis de controle
         self.__viewer = ImageViewer(parent=self)
-        self.__caminho = caminho
+        self.__caminho = self.__processar_caminho(caminho)
         self.__diretorio_tool_bar = QToolBar("Diretorio", self)
         self.__diretorio_tool_bar.setVisible(config.get_config_boolean('editor', 'toolbar_diretorio'))
         self.tamanho_icones = QSize(24, 24)
@@ -57,7 +57,7 @@ class DoImageViewer(QMainWindow):
         self.label_tamanho = QLabel("")
         self.label_lista = QLabel("Nenhuma foto carregada")
         self.label_zoom = QLabel("")
-        self.__label_diretorio = QLabelClick(self.__CAMINHO)
+        self.__label_diretorio = QLabelClick(self.__caminho)
 
         # configuração do layout principal
         self.__layout_principal = QHBoxLayout()
@@ -289,6 +289,24 @@ class DoImageViewer(QMainWindow):
         self.statusBar().addWidget(self.label_zoom, 0)
         self.statusBar().addWidget(self.label_lista, 0)
 
+    def __processar_caminho(self, path) -> str:
+        print(path)
+        if path == "":
+            return QDir.homePath()
+
+        arquivo = ""
+        if os.path.isdir(path):
+            # lista_dir = sorted([x for x in os.listdir(path) if not x.startswith('.') and x.find('.') == -1])
+            lista_files = sorted(
+                [x for x in os.listdir(path) if not x.startswith('.') and x.find('.') != -1])
+
+            for item in lista_files:
+                if item.split('.')[1] in self.__LISTA_EXTENSOES:
+                    arquivo = item
+                    break
+
+        return f'{path}{arquivo}'
+
     def __carregar_imagem(self):
         try:
             path = Path(self.__caminho)
@@ -436,7 +454,7 @@ class DoImageViewer(QMainWindow):
         filename, _ = QFileDialog.getSaveFileName(
             self,
             "Salvar foto",
-            self.__CAMINHO,
+            self.__caminho,
             "Imagens (*.jpg *.jpeg *.png)"
         )
         if filename != "":
