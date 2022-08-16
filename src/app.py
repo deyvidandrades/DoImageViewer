@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from pathlib import Path
 from subprocess import Popen
 
@@ -375,11 +376,20 @@ class DoImageViewer(QMainWindow):
 
             largura, altura = Image.open(f"{caminho}{imagem}").size
 
-            self.__label_diretorio.setText(caminho)
+            caminho_processado = caminho
+            caminho_split = caminho.split('/')[:-1]
+            tamanho_caminho = 4
+            if len(caminho_split) >= tamanho_caminho:
+                caminho_processado = "..." + "/".join(caminho_split[len(caminho_split) - tamanho_caminho:])
+            self.__label_diretorio.setText(caminho_processado)
+
+            modificado = datetime.fromtimestamp(os.stat(f"{caminho}{imagem}").st_ctime)
+            criado = datetime.fromtimestamp(os.stat(f"{caminho}{imagem}").st_mtime)
 
             self.label_tamanho.setText(
                 str(largura) + "  x " + str(altura) + " pixels  " +
-                str(int(os.path.getsize(f"{caminho}{imagem}") / 1024)) + "kB"
+                str(int(os.path.getsize(f"{caminho}{imagem}") / 1024)) + "kB  " +
+                f'em {min(modificado, criado).strftime("%d/%m/%Y")}'
             )
 
             self.label_lista.setText(str(indice_calculado) + " / " + str(len(lista)))
