@@ -77,7 +77,7 @@ class ImageViewer(QWidget):
         # ponto_mouse = QPoint(mouse_x, mouse_y)
 
         if s > 0 and self.m_scale <= 3:
-            self.m_scale += .1
+            self.m_scale += .05
             # if not center:
             #     self.m_delta += QPoint(
             #         int((ponto_tela.x() - ponto_mouse.x()) * .1),
@@ -85,8 +85,8 @@ class ImageViewer(QWidget):
             #     )
             # else:
             #     self.m_delta = QPoint(0, 0)
-        elif s < 0 and self.m_scale >= .5:
-            self.m_scale -= .1
+        elif s < 0 and self.m_scale >= .2:
+            self.m_scale -= .05
             # if not center:
             #     self.m_delta -= QPoint(
             #         int((ponto_tela.x() - ponto_mouse.x()) * .1),
