@@ -100,21 +100,24 @@ class DoImageViewer(QMainWindow):
             self.__carregar_imagem()
 
     def __configurar_gui(self):
+
+        # Labels para mudar a imagem
         self.label_left = QLabelClick()
         self.label_left.setPixmap(QPixmap(self.__RESOURCES + 'left-svgrepo-com.svg').scaled(self.tamanho_icones))
         self.label_left.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.label_left.clicked.connect(lambda: self.__mudar_imagem('esq'))
         self.label_left.setHidden(True)
-        self.__layout_principal.addWidget(self.label_left)
-
-        self.__layout_principal.addWidget(self.__viewer, 1)
 
         self.label_right = QLabelClick()
         self.label_right.setPixmap(QPixmap(self.__RESOURCES + 'right-svgrepo-com.svg').scaled(self.tamanho_icones))
         self.label_right.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.label_right.clicked.connect(lambda: self.__mudar_imagem('dir'))
         self.label_right.setHidden(True)
-        self.__layout_principal.addWidget(self.label_right)
+
+        # Configuração do layout
+        self.__layout_principal.addLayout(self.label_left)
+        self.__layout_principal.addWidget(self.__viewer, 1)
+        self.__layout_principal.addLayout(self.label_right)
 
     # noinspection PyUnresolvedReferences
     def __configurar_menu(self):
