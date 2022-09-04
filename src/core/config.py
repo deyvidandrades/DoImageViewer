@@ -43,7 +43,7 @@ class Config:
 
         return int(config[0]), int(config[1])
 
-    def set_config(self, secao: str = None, opcao: str = None, valor: str = None) -> None:
+    def set_config(self, secao: str = None, opcao: str = None, valor: any = None) -> None:
         """
         Salvar as configurações no arquivo .ini
         :param secao: .ini section
