@@ -287,15 +287,19 @@ class SobreDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(f"DoImageViewer {versao}")
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.NoButton)
+        self.setStyleSheet("QDialog {background-color: #1b2224;color: #f0f0f0;}")
 
         self.layout = QVBoxLayout()
         label_frase = QLabel("Um visualizador de imagens simplista")
+        label_frase.setStyleSheet("""color: #f0f0f0;""")
         label_copy = QLabel(f"Copyright {chr(0xa9)} 2021- "
                             f"{str(datetime.date.today().year)} Deyvid A. Silva <deyvid.asilva@gmail.com>")
+        label_copy.setStyleSheet("""color: #f0f0f0;""")
         label_site = QLabel(
             """<a href="https://www.github.com/deyvidandrades/doimageviewer/">
             https://www.github.com/deyvidandrades/doimageviewer/</a>"""
         )
+        label_site.setStyleSheet("""color: #f0f0f0;""")
         label_site.setOpenExternalLinks(True)
 
         self.layout.addWidget(label_frase)
