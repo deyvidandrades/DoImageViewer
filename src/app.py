@@ -221,6 +221,11 @@ class DoImageViewer(QMainWindow):
         inverter_h.setIcon(QIcon(self.__RESOURCES + 'horizontal-flip-svgrepo-com.svg'))
         inverter_h.triggered.connect(lambda: self.__viewer.inverter_horizontal())
 
+        self.__usar_antialiasing = QAction("Suavizar imagem", self)
+        self.__usar_antialiasing.setCheckable(True)
+        self.__usar_antialiasing.setChecked(Config().get_config_boolean('editor', 'antialiasing'))
+        self.__usar_antialiasing.triggered.connect(lambda: self.__mudar_antialiasing())
+
         menu_imagem = QMenu("&Imagem", self)
         menu_imagem.setStyleSheet(
             """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
@@ -236,13 +241,10 @@ class DoImageViewer(QMainWindow):
         menu_imagem.addSeparator()
         menu_imagem.addAction(inverter_v)
         menu_imagem.addAction(inverter_h)
+        menu_imagem.addSeparator()
+        menu_imagem.addAction(self.__usar_antialiasing)
 
         # MENU FILTROS
-        self.__usar_antialiasing = QAction("Antialiasing", self)
-        self.__usar_antialiasing.setCheckable(True)
-        self.__usar_antialiasing.setChecked(Config().get_config_boolean('editor', 'antialiasing'))
-        self.__usar_antialiasing.triggered.connect(lambda: self.__mudar_antialiasing())
-
         filtro_None = QAction("Sem filtro", self)
         filtro_None.triggered.connect(lambda: self.__viewer.addicionar_filtro(0))
 
@@ -264,28 +266,20 @@ class DoImageViewer(QMainWindow):
         filtro_Lighten = QAction("Lighten", self)
         filtro_Lighten.triggered.connect(lambda: self.__viewer.addicionar_filtro(6))
 
-        menu_filtros = QMenu("&Filtros", self)
+        menu_filtros = QMenu("&Filtros(debug)", self)
         menu_filtros.setStyleSheet(
             """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
             QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
         )
 
-        menu_filtros.addAction(self.__usar_antialiasing)
-        menu_filtros.addSeparator()
-        # plus aviva
-        # color burn = escurece
-        # dodge aviva + escurece
-        # Overlay escurece
-        # Lighten Clareia
-        # hardLight satura
-        # diference equilibra + satura
         menu_filtros.addAction(filtro_Plus)
         menu_filtros.addAction(filtro_Lighten)
+        menu_filtros.addSeparator()
+        menu_filtros.addAction(filtro_HardLight)
         menu_filtros.addAction(filtro_Difference)
         menu_filtros.addSeparator()
         menu_filtros.addAction(filtro_Dodge)
         menu_filtros.addAction(filtro_Overlay)
-        menu_filtros.addAction(filtro_HardLight)
         menu_filtros.addSeparator()
         menu_filtros.addAction(filtro_None)
 
