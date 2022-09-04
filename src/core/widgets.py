@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QDialog, QVBoxLayout, QDialogButton
 
 class ImageViewer(QWidget):
 
-    def __init__(self, parent) -> None:
+    def __init__(self, parent, antialiasing: bool = True) -> None:
         super().__init__(parent)
 
         # Imagem
@@ -23,12 +23,21 @@ class ImageViewer(QWidget):
         # Variaveis de configuração
         self.__arrastando_imagem = False
         self.__rotacao = 0
+        self.__antialiasing = antialiasing
+        self.__filtro = None
 
         # Iniciando o tracking do cursor e mudando para Pointing
         self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.setMouseTracking(True)
 
     def paintEvent(self, paint_event: QPaintEvent):
+        # color burn = escurece
+        # plus aviva
+        # dodge aviva + escurece
+        # diference equilibra + satura
+        # hardLight satura
+        # Overlay escurece
+        # Lighten Clareia
 
         # atualizar label de zoom a cada alteração
         self.parent().parent().label_zoom.setText(str(math.ceil(self.m_scale * 100)) + "%")
@@ -39,6 +48,20 @@ class ImageViewer(QWidget):
         painter.translate(paint_event.rect().center())
         painter.scale(self.m_scale, self.m_scale)
         painter.translate(self.m_delta)
+
+        # Adiciona o filtro
+        if self.__filtro is not None:
+            painter.setCompositionMode(self.__filtro)
+
+        # Adiciona filtro de suavização antialiasing
+        if self.__antialiasing:
+            painter.setRenderHints(
+                QPainter.RenderHint.SmoothPixmapTransform |
+                QPainter.RenderHint.LosslessImageRendering |
+                QPainter.RenderHint.Antialiasing,
+                self.__antialiasing
+            )
+
         painter.drawPixmap(self.m_rect.topLeft(), self.m_pixmap)
         painter.end()
 
@@ -215,6 +238,32 @@ class ImageViewer(QWidget):
         rm.scale(1, -1)
         self.m_pixmap = self.m_pixmap.transformed(rm)
         self.update()
+
+    def addicionar_filtro(self, fid: int):
+        # color burn = escurece
+        # plus aviva
+        # dodge aviva + escurece
+        # diference equilibra + satura
+        # hardLight satura
+        # Overlay escurece
+        # Lighten Clareia
+        if fid == 1:
+            self.__filtro = QPainter.CompositionMode.CompositionMode_Plus
+        elif fid == 2:
+            self.__filtro = QPainter.CompositionMode.CompositionMode_ColorDodge
+        elif fid == 3:
+            self.__filtro = QPainter.CompositionMode.CompositionMode_Difference
+        elif fid == 4:
+            self.__filtro = QPainter.CompositionMode.CompositionMode_HardLight
+        elif fid == 5:
+            self.__filtro = QPainter.CompositionMode.CompositionMode_Overlay
+        elif fid == 6:
+            self.__filtro = QPainter.CompositionMode.CompositionMode_Lighten
+        else:
+            self.__filtro = None
+
+    def mudar_antialiasing(self, on: bool):
+        self.__antialiasing = on
 
 
 class QLabelClick(QLabel):

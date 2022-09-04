@@ -26,6 +26,10 @@ class DoImageViewer(QMainWindow):
         if config.get_config('editor', 'caminho') == "\"\"":
             config.set_config('editor', 'caminho', QDir.homePath() + '/')
 
+        antialiasing = config.get_config_boolean('editor', 'antialiasing')
+
+        # config.set_config('editor', 'antialiasing', False)
+
         # widget da aplicação
         self.__app = app
 
@@ -48,7 +52,7 @@ class DoImageViewer(QMainWindow):
             self.move(QPoint(int(tela.width() / 2), int(tela.height() / 2)))
 
         # variáveis de controle
-        self.__viewer = ImageViewer(parent=self)
+        self.__viewer = ImageViewer(parent=self, antialiasing=antialiasing)
         self.__caminho = self.__processar_caminho(caminho)
         self.__diretorio_tool_bar = QToolBar("Diretorio", self)
         self.__diretorio_tool_bar.setVisible(config.get_config_boolean('editor', 'toolbar_diretorio'))
@@ -115,9 +119,9 @@ class DoImageViewer(QMainWindow):
         self.label_right.setHidden(True)
 
         # Configuração do layout
-        self.__layout_principal.addLayout(self.label_left)
+        self.__layout_principal.addWidget(self.label_left)
         self.__layout_principal.addWidget(self.__viewer, 1)
-        self.__layout_principal.addLayout(self.label_right)
+        self.__layout_principal.addWidget(self.label_right)
 
     # noinspection PyUnresolvedReferences
     def __configurar_menu(self):
@@ -233,6 +237,58 @@ class DoImageViewer(QMainWindow):
         menu_imagem.addAction(inverter_v)
         menu_imagem.addAction(inverter_h)
 
+        # MENU FILTROS
+        self.__usar_antialiasing = QAction("Antialiasing", self)
+        self.__usar_antialiasing.setCheckable(True)
+        self.__usar_antialiasing.setChecked(Config().get_config_boolean('editor', 'antialiasing'))
+        self.__usar_antialiasing.triggered.connect(lambda: self.__mudar_antialiasing())
+
+        filtro_None = QAction("Sem filtro", self)
+        filtro_None.triggered.connect(lambda: self.__viewer.addicionar_filtro(0))
+
+        filtro_Plus = QAction("Plus", self)
+        filtro_Plus.triggered.connect(lambda: self.__viewer.addicionar_filtro(1))
+
+        filtro_Dodge = QAction("Dodge", self)
+        filtro_Dodge.triggered.connect(lambda: self.__viewer.addicionar_filtro(2))
+
+        filtro_Difference = QAction("Difference ", self)
+        filtro_Difference.triggered.connect(lambda: self.__viewer.addicionar_filtro(3))
+
+        filtro_HardLight = QAction("HardLight", self)
+        filtro_HardLight.triggered.connect(lambda: self.__viewer.addicionar_filtro(4))
+
+        filtro_Overlay = QAction("Overlay", self)
+        filtro_Overlay.triggered.connect(lambda: self.__viewer.addicionar_filtro(5))
+
+        filtro_Lighten = QAction("Lighten", self)
+        filtro_Lighten.triggered.connect(lambda: self.__viewer.addicionar_filtro(6))
+
+        menu_filtros = QMenu("&Filtros", self)
+        menu_filtros.setStyleSheet(
+            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
+            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
+        )
+
+        menu_filtros.addAction(self.__usar_antialiasing)
+        menu_filtros.addSeparator()
+        # plus aviva
+        # color burn = escurece
+        # dodge aviva + escurece
+        # Overlay escurece
+        # Lighten Clareia
+        # hardLight satura
+        # diference equilibra + satura
+        menu_filtros.addAction(filtro_Plus)
+        menu_filtros.addAction(filtro_Lighten)
+        menu_filtros.addAction(filtro_Difference)
+        menu_filtros.addSeparator()
+        menu_filtros.addAction(filtro_Dodge)
+        menu_filtros.addAction(filtro_Overlay)
+        menu_filtros.addAction(filtro_HardLight)
+        menu_filtros.addSeparator()
+        menu_filtros.addAction(filtro_None)
+
         # MENU AJUDA
         sobre = QAction("&Sobre", self)
         sobre.triggered.connect(self.__abrir_info_dialog)
@@ -255,6 +311,7 @@ class DoImageViewer(QMainWindow):
         self.menuBar().addMenu(menu_arquivo)
         self.menuBar().addMenu(menu_visualizar)
         self.menuBar().addMenu(menu_imagem)
+        self.menuBar().addMenu(menu_filtros)
         self.menuBar().addMenu(menu_ajuda)
 
     def __configurar_tool_bar(self):
@@ -491,6 +548,23 @@ class DoImageViewer(QMainWindow):
             self.__diretorio_tool_bar.setVisible(True)
 
         Config().set_config('editor', 'toolbar_diretorio', str(self.__diretorio_tool_bar.isVisible()))
+
+    def __adicionar_filtro(self, filtro: int):
+        self.__viewer.addicionar_filtro(filtro)
+
+    def __mudar_antialiasing(self):
+        config = Config()
+
+        if config.get_config_boolean('editor', 'antialiasing'):
+            config.set_config('editor', 'antialiasing', False)
+            self.__usar_antialiasing.setChecked(False)
+            self.__viewer.mudar_antialiasing(False)
+            self.__recarregar_imagem()
+        else:
+            config.set_config('editor', 'antialiasing', True)
+            self.__usar_antialiasing.setChecked(True)
+            self.__viewer.mudar_antialiasing(True)
+            self.__recarregar_imagem()
 
     def __editar_gimp(self):
         try:
