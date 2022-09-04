@@ -245,26 +245,26 @@ class DoImageViewer(QMainWindow):
         menu_imagem.addAction(self.__usar_antialiasing)
 
         # MENU FILTROS
-        filtro_None = QAction("Sem filtro", self)
-        filtro_None.triggered.connect(lambda: self.__viewer.addicionar_filtro(0))
+        filtro_none = QAction("Sem filtro", self)
+        filtro_none.triggered.connect(lambda: self.__viewer.addicionar_filtro(0))
 
-        filtro_Plus = QAction("Plus", self)
-        filtro_Plus.triggered.connect(lambda: self.__viewer.addicionar_filtro(1))
+        filtro_plus = QAction("Plus", self)
+        filtro_plus.triggered.connect(lambda: self.__viewer.addicionar_filtro(1))
 
-        filtro_Dodge = QAction("Dodge", self)
-        filtro_Dodge.triggered.connect(lambda: self.__viewer.addicionar_filtro(2))
+        filtro_dodge = QAction("Dodge", self)
+        filtro_dodge.triggered.connect(lambda: self.__viewer.addicionar_filtro(2))
 
-        filtro_Difference = QAction("Difference ", self)
-        filtro_Difference.triggered.connect(lambda: self.__viewer.addicionar_filtro(3))
+        filtro_difference = QAction("Difference ", self)
+        filtro_difference.triggered.connect(lambda: self.__viewer.addicionar_filtro(3))
 
-        filtro_HardLight = QAction("HardLight", self)
-        filtro_HardLight.triggered.connect(lambda: self.__viewer.addicionar_filtro(4))
+        filtro_hard_light = QAction("HardLight", self)
+        filtro_hard_light.triggered.connect(lambda: self.__viewer.addicionar_filtro(4))
 
-        filtro_Overlay = QAction("Overlay", self)
-        filtro_Overlay.triggered.connect(lambda: self.__viewer.addicionar_filtro(5))
+        filtro_overlay = QAction("Overlay", self)
+        filtro_overlay.triggered.connect(lambda: self.__viewer.addicionar_filtro(5))
 
-        filtro_Lighten = QAction("Lighten", self)
-        filtro_Lighten.triggered.connect(lambda: self.__viewer.addicionar_filtro(6))
+        filtro_lighten = QAction("Lighten", self)
+        filtro_lighten.triggered.connect(lambda: self.__viewer.addicionar_filtro(6))
 
         menu_filtros = QMenu("&Filtros(debug)", self)
         menu_filtros.setStyleSheet(
@@ -272,16 +272,16 @@ class DoImageViewer(QMainWindow):
             QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
         )
 
-        menu_filtros.addAction(filtro_Plus)
-        menu_filtros.addAction(filtro_Lighten)
+        menu_filtros.addAction(filtro_plus)
+        menu_filtros.addAction(filtro_lighten)
         menu_filtros.addSeparator()
-        menu_filtros.addAction(filtro_HardLight)
-        menu_filtros.addAction(filtro_Difference)
+        menu_filtros.addAction(filtro_hard_light)
+        menu_filtros.addAction(filtro_difference)
         menu_filtros.addSeparator()
-        menu_filtros.addAction(filtro_Dodge)
-        menu_filtros.addAction(filtro_Overlay)
+        menu_filtros.addAction(filtro_dodge)
+        menu_filtros.addAction(filtro_overlay)
         menu_filtros.addSeparator()
-        menu_filtros.addAction(filtro_None)
+        menu_filtros.addAction(filtro_none)
 
         # MENU AJUDA
         sobre = QAction("&Sobre", self)
