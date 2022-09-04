@@ -16,7 +16,7 @@ from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
 class DoImageViewer(QMainWindow):
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
-    __VERSAO = 'v1.1.9'
+    __VERSAO = 'v1.3.2'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     def __init__(self, app: QApplication, caminho: str = ""):
@@ -287,7 +287,7 @@ class DoImageViewer(QMainWindow):
         sobre = QAction("&Sobre", self)
         sobre.triggered.connect(self.__abrir_info_dialog)
 
-        editar_gimp = QAction("&Editar com Gimp", self)
+        editar_gimp = QAction("&Abrir com Gimp", self)
         editar_gimp.triggered.connect(self.__editar_gimp)
 
         menu_ajuda = QMenu("&Ajuda", self)
@@ -297,6 +297,7 @@ class DoImageViewer(QMainWindow):
         )
 
         menu_ajuda.addAction(sobre)
+        menu_ajuda.addSeparator()
         menu_ajuda.addAction(editar_gimp)
 
         # BARRA DE MENU
