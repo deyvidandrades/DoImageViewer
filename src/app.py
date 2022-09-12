@@ -86,8 +86,12 @@ class DoImageViewer(QMainWindow):
         if event.type() == QEvent.Type.WindowStateChange:
             if event.oldState() and Qt.WindowState.WindowMinimized:
                 self.__viewer.centralizar()
+
             elif event.oldState() == Qt.WindowState.WindowNoState or \
                     self.windowState() == Qt.WindowState.WindowMaximized:
+                self.__viewer.centralizar()
+
+            elif event.oldState() == Qt.WindowState.WindowFullScreen:
                 self.__viewer.centralizar()
 
     def dragEnterEvent(self, event):
@@ -173,6 +177,10 @@ class DoImageViewer(QMainWindow):
         exibir_diretorio.setChecked(Config().get_config_boolean('editor', 'toolbar_diretorio'))
         exibir_diretorio.triggered.connect(self.__exibir_diretorio)
 
+        fullscreen = QAction("Fullscreen", self)
+        fullscreen.setShortcut("f")
+        fullscreen.triggered.connect(lambda: self.__full_screen())
+
         menu_visualizar = QMenu("&Visualizar", self)
         menu_visualizar.setStyleSheet(
             """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
@@ -182,6 +190,8 @@ class DoImageViewer(QMainWindow):
         menu_visualizar.addSeparator()
         menu_visualizar.addAction(ampliar)
         menu_visualizar.addAction(reduzir)
+        menu_visualizar.addSeparator()
+        menu_visualizar.addAction(fullscreen)
         menu_visualizar.addSeparator()
         menu_visualizar.addAction(exibir_diretorio)
 
@@ -560,6 +570,14 @@ class DoImageViewer(QMainWindow):
             self.__usar_antialiasing.setChecked(True)
             self.__viewer.mudar_antialiasing(True)
             self.__recarregar_imagem()
+
+    def __full_screen(self):
+        if self.windowState() and Qt.WindowState.WindowFullScreen:
+            self.showNormal()
+        else:
+            self.showFullScreen()
+
+        self.__viewer.centralizar()
 
     def __editar_gimp(self):
         try:
