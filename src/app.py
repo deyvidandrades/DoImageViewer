@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from subprocess import Popen
+from threading import Timer
 
 from PIL import Image
 from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
@@ -27,8 +28,6 @@ class DoImageViewer(QMainWindow):
             config.set_config('editor', 'caminho', QDir.homePath() + '/')
 
         antialiasing = config.get_config_boolean('editor', 'antialiasing')
-
-        # config.set_config('editor', 'antialiasing', False)
 
         # widget da aplicação
         self.__app = app
@@ -57,6 +56,10 @@ class DoImageViewer(QMainWindow):
         self.__diretorio_tool_bar = QToolBar("Diretorio", self)
         self.__diretorio_tool_bar.setVisible(config.get_config_boolean('editor', 'toolbar_diretorio'))
         self.tamanho_icones = QSize(24, 24)
+
+        # timer da apresentação de slides
+        self.__timer_interval = 3.5
+        self.__timer = Timer(self.__timer_interval, self.__slide_show)
 
         # labels
         self.label_tamanho = QLabel("")
@@ -181,6 +184,10 @@ class DoImageViewer(QMainWindow):
         fullscreen.setShortcut("f")
         fullscreen.triggered.connect(lambda: self.__full_screen())
 
+        apresentacao_slide = QAction("Apresentação de slides", self)
+        apresentacao_slide.setShortcut("f3")
+        apresentacao_slide.triggered.connect(lambda: self.__set_slide())
+
         menu_visualizar = QMenu("&Visualizar", self)
         menu_visualizar.setStyleSheet(
             """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
@@ -190,6 +197,8 @@ class DoImageViewer(QMainWindow):
         menu_visualizar.addSeparator()
         menu_visualizar.addAction(ampliar)
         menu_visualizar.addAction(reduzir)
+        menu_visualizar.addSeparator()
+        menu_visualizar.addAction(apresentacao_slide)
         menu_visualizar.addSeparator()
         menu_visualizar.addAction(fullscreen)
         menu_visualizar.addSeparator()
@@ -578,6 +587,23 @@ class DoImageViewer(QMainWindow):
             self.showFullScreen()
 
         self.__viewer.centralizar()
+
+    def __slide_show(self):
+        self.__mudar_imagem('dir')
+        self.__timer.run()
+
+    def __set_slide(self):
+        if self.__timer.is_alive():
+            self.__timer.cancel()
+        else:
+            try:
+                self.__timer.start()
+            except RuntimeError:
+                self.__timer = Timer(self.__timer_interval, self.__slide_show)
+                self.__timer.start()
+
+    def cancelar_timer(self):
+        self.__timer.cancel()
 
     def __editar_gimp(self):
         try:

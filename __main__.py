@@ -31,8 +31,9 @@ def main() -> None:
 
     app = QApplication(sys.argv)
 
+    window = None
     # noinspection PyUnresolvedReferences
-    app.aboutToQuit.connect(lambda: on_exit(is_url))
+    app.aboutToQuit.connect(lambda: on_exit(is_url, window))
 
     window = DoImageViewer(app, caminho_arquivo)
 
@@ -44,7 +45,10 @@ def main() -> None:
     sys.exit(app.exec())
 
 
-def on_exit(is_url: bool):
+def on_exit(is_url: bool, window: DoImageViewer):
+    if window is not None:
+        window.cancelar_timer()
+
     if is_url:
         os.remove(CAMINHO_RES)
 
