@@ -198,11 +198,10 @@ class DoImageViewer(QMainWindow):
         menu_visualizar.addAction(ampliar)
         menu_visualizar.addAction(reduzir)
         menu_visualizar.addSeparator()
-        menu_visualizar.addAction(apresentacao_slide)
-        menu_visualizar.addSeparator()
-        menu_visualizar.addAction(fullscreen)
-        menu_visualizar.addSeparator()
         menu_visualizar.addAction(exibir_diretorio)
+        menu_visualizar.addSeparator()
+        menu_visualizar.addAction(apresentacao_slide)
+        menu_visualizar.addAction(fullscreen)
 
         # MENU IMAGEM
         proxima_imagem = QAction("Proxima", self)
