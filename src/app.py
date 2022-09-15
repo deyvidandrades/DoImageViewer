@@ -7,7 +7,7 @@ from subprocess import Popen
 from threading import Timer
 
 import pilgram
-from PIL import Image
+from PIL import Image, ImageEnhance
 from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu, QLabel, QHBoxLayout, QWidget, QFileDialog, QApplication, QToolBar, \
@@ -20,7 +20,7 @@ from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
 class DoImageViewer(QMainWindow):
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
-    __VERSAO = 'v1.4.0'
+    __VERSAO = 'v1.4.2'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     def __init__(self, app: QApplication, caminho: str = ""):
@@ -59,6 +59,10 @@ class DoImageViewer(QMainWindow):
         self.__diretorio_tool_bar = QToolBar("Diretorio", self)
         self.__diretorio_tool_bar.setVisible(config.get_config_boolean('editor', 'toolbar_diretorio'))
         self.tamanho_icones = QSize(24, 24)
+
+        # Variaveis de edição de imagem
+        self.__enhance = 1.0
+        self.__nitidez = 1.0
 
         # timer da apresentação de slides
         self.__timer_interval = 3.5
@@ -164,6 +168,105 @@ class DoImageViewer(QMainWindow):
         menu_arquivo.addSeparator()
         menu_arquivo.addAction(sair)
 
+        # MENU FILTROS
+        filtro_original = QAction("Original", self)
+        filtro_original.setShortcut("Ctrl+G")
+        filtro_original.triggered.connect(lambda: self.__adicionar_filtro(0))
+
+        filtro_aden = QAction("Aden", self)
+        filtro_aden.triggered.connect(lambda: self.__adicionar_filtro(1))
+
+        filtro_clarendon = QAction("Clarendon", self)
+        filtro_clarendon.triggered.connect(lambda: self.__adicionar_filtro(2))
+
+        filtro_earlybird = QAction("Earlybird ", self)
+        filtro_earlybird.triggered.connect(lambda: self.__adicionar_filtro(3))
+
+        filtro_hudson = QAction("Hudson", self)
+        filtro_hudson.triggered.connect(lambda: self.__adicionar_filtro(4))
+
+        filtro_lark = QAction("Lark", self)
+        filtro_lark.triggered.connect(lambda: self.__adicionar_filtro(5))
+
+        filtro_lofi = QAction("Lofi", self)
+        filtro_lofi.triggered.connect(lambda: self.__adicionar_filtro(6))
+
+        filtro_maven = QAction("Maven", self)
+        filtro_maven.triggered.connect(lambda: self.__adicionar_filtro(7))
+
+        filtro_reyes = QAction("Reyes", self)
+        filtro_reyes.triggered.connect(lambda: self.__adicionar_filtro(8))
+
+        filtro_valencia = QAction("Valencia", self)
+        filtro_valencia.triggered.connect(lambda: self.__adicionar_filtro(9))
+
+        filtro_walden = QAction("Walden", self)
+        filtro_walden.triggered.connect(lambda: self.__adicionar_filtro(10))
+
+        filtro_aleatorio = QAction("Filtro aleatório", self)
+        filtro_aleatorio.setShortcut("Ctrl+F")
+        filtro_aleatorio.setIcon(QIcon(self.__RESOURCES + 'flip-svgrepo-com'))
+        filtro_aleatorio.triggered.connect(lambda: self.__adicionar_filtro(random.randint(1, 10)))
+
+        menu_filtros = QMenu("&Filtros",self)
+        menu_filtros.setStyleSheet(
+            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
+            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
+        )
+
+        menu_filtros.addAction(filtro_aden)
+        menu_filtros.addAction(filtro_clarendon)
+        menu_filtros.addAction(filtro_earlybird)
+        menu_filtros.addAction(filtro_hudson)
+        menu_filtros.addAction(filtro_lark)
+        menu_filtros.addAction(filtro_lofi)
+        menu_filtros.addAction(filtro_maven)
+        menu_filtros.addAction(filtro_reyes)
+        menu_filtros.addAction(filtro_valencia)
+        menu_filtros.addAction(filtro_walden)
+
+        # MENU EDITAR
+        corrigir_iluminacao = QAction("Corrigir iluminação", self)
+        corrigir_iluminacao.setIcon(QIcon(self.__RESOURCES + 'brightness-half-svgrepo-com'))
+        corrigir_iluminacao.triggered.connect(lambda: self.__corrigir_iluminacao(0))
+
+        self.__corrigir_iluminacao_add = QAction("Aumentar iluminação", self)
+        self.__corrigir_iluminacao_add.triggered.connect(lambda: self.__corrigir_iluminacao(1))
+
+        self.__corrigir_iluminacao_rmv = QAction("Diminuir iluminação", self)
+        self.__corrigir_iluminacao_rmv.triggered.connect(lambda: self.__corrigir_iluminacao(2))
+
+        self.__corrigir_nitidez_add = QAction("Aumentar nitidez")
+        self.__corrigir_nitidez_add.triggered.connect(lambda: self.__corrigir_nitidez(1))
+
+        self.__corrigir_nitidez_rmv = QAction("Diminuir nitidez")
+        self.__corrigir_nitidez_rmv.triggered.connect(lambda: self.__corrigir_nitidez(2))
+
+        crop_imagem = QAction("Recortar margens", self)
+        crop_imagem.setShortcut("Ctrl+x")
+        crop_imagem.setIcon(QIcon(self.__RESOURCES + 'crop-svgrepo-com.svg'))
+        crop_imagem.triggered.connect(lambda: self.__crop_margem())
+
+        menu_editar = QMenu("&Editar", self)
+        menu_editar.setStyleSheet(
+            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
+            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
+        )
+        menu_editar.addAction(corrigir_iluminacao)
+        menu_editar.addSeparator()
+        menu_editar.addAction(self.__corrigir_iluminacao_add)
+        menu_editar.addAction(self.__corrigir_iluminacao_rmv)
+        menu_editar.addSeparator()
+        menu_editar.addAction(self.__corrigir_nitidez_add)
+        menu_editar.addAction(self.__corrigir_nitidez_rmv)
+        menu_editar.addSeparator()
+        menu_editar.addMenu(menu_filtros)
+        menu_editar.addAction(filtro_aleatorio)
+        menu_editar.addSeparator()
+        menu_editar.addAction(crop_imagem)
+        menu_editar.addSeparator()
+        menu_editar.addAction(filtro_original)
+
         # MENU VISUALIZAR
         centralizar = QAction("Centralizar imagem", self)
         centralizar.setShortcut("Space")
@@ -242,11 +345,6 @@ class DoImageViewer(QMainWindow):
         inverter_h.setIcon(QIcon(self.__RESOURCES + 'horizontal-flip-svgrepo-com.svg'))
         inverter_h.triggered.connect(lambda: self.__viewer.inverter_horizontal())
 
-        crop_imagem = QAction("Recortar margens", self)
-        crop_imagem.setShortcut("Ctrl+x")
-        crop_imagem.setIcon(QIcon(self.__RESOURCES + 'crop-svgrepo-com.svg'))
-        crop_imagem.triggered.connect(lambda: self.__crop_margem())
-
         self.__usar_antialiasing = QAction("Suavizar imagem", self)
         self.__usar_antialiasing.setCheckable(True)
         self.__usar_antialiasing.setChecked(Config().get_config_boolean('editor', 'antialiasing'))
@@ -268,68 +366,7 @@ class DoImageViewer(QMainWindow):
         menu_imagem.addAction(inverter_v)
         menu_imagem.addAction(inverter_h)
         menu_imagem.addSeparator()
-        menu_imagem.addAction(crop_imagem)
-        menu_imagem.addSeparator()
         menu_imagem.addAction(self.__usar_antialiasing)
-
-        # MENU FILTROS
-        filtro_original = QAction("Original", self)
-        filtro_original.setShortcut("Ctrl+G")
-        filtro_original.triggered.connect(lambda: self.__adicionar_filtro(0))
-
-        filtro_aden = QAction("Aden", self)
-        filtro_aden.triggered.connect(lambda: self.__adicionar_filtro(1))
-
-        filtro_clarendon = QAction("Clarendon", self)
-        filtro_clarendon.triggered.connect(lambda: self.__adicionar_filtro(2))
-
-        filtro_earlybird = QAction("Earlybird ", self)
-        filtro_earlybird.triggered.connect(lambda: self.__adicionar_filtro(3))
-
-        filtro_hudson = QAction("Hudson", self)
-        filtro_hudson.triggered.connect(lambda: self.__adicionar_filtro(4))
-
-        filtro_lark = QAction("Lark", self)
-        filtro_lark.triggered.connect(lambda: self.__adicionar_filtro(5))
-
-        filtro_lofi = QAction("Lofi", self)
-        filtro_lofi.triggered.connect(lambda: self.__adicionar_filtro(6))
-
-        filtro_maven = QAction("Maven", self)
-        filtro_maven.triggered.connect(lambda: self.__adicionar_filtro(7))
-
-        filtro_reyes = QAction("Reyes", self)
-        filtro_reyes.triggered.connect(lambda: self.__adicionar_filtro(8))
-
-        filtro_valencia = QAction("Valencia", self)
-        filtro_valencia.triggered.connect(lambda: self.__adicionar_filtro(9))
-
-        filtro_walden = QAction("Walden", self)
-        filtro_walden.triggered.connect(lambda: self.__adicionar_filtro(10))
-
-        filtro_aleatorio = QAction("Filtro aleatório", self)
-        filtro_aleatorio.setShortcut("Ctrl+F")
-        filtro_aleatorio.triggered.connect(lambda: self.__adicionar_filtro(random.randint(1, 10)))
-
-        menu_filtros = QMenu("&Filtros", self)
-        menu_filtros.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
-
-        menu_filtros.addAction(filtro_aden)
-        menu_filtros.addAction(filtro_clarendon)
-        menu_filtros.addAction(filtro_earlybird)
-        menu_filtros.addAction(filtro_hudson)
-        menu_filtros.addAction(filtro_lark)
-        menu_filtros.addAction(filtro_lofi)
-        menu_filtros.addAction(filtro_maven)
-        menu_filtros.addAction(filtro_reyes)
-        menu_filtros.addAction(filtro_valencia)
-        menu_filtros.addAction(filtro_walden)
-        menu_filtros.addSeparator()
-        menu_filtros.addAction(filtro_original)
-        menu_filtros.addAction(filtro_aleatorio)
 
         # MENU AJUDA
         sobre = QAction("&Sobre", self)
@@ -352,9 +389,9 @@ class DoImageViewer(QMainWindow):
         self.menuBar().setStyleSheet("background-color: #263033; color: #f6f6f6; padding: 2px;")
         self.menuBar().setAutoFillBackground(True)
         self.menuBar().addMenu(menu_arquivo)
+        self.menuBar().addMenu(menu_editar)
         self.menuBar().addMenu(menu_visualizar)
         self.menuBar().addMenu(menu_imagem)
-        self.menuBar().addMenu(menu_filtros)
         self.menuBar().addMenu(menu_ajuda)
 
     def __configurar_tool_bar(self):
@@ -726,6 +763,42 @@ class DoImageViewer(QMainWindow):
             im1.save(filename)
 
             self.__viewer.adicionar_imagem(QPixmap(filename))
+
+    def __corrigir_iluminacao(self, valor: int):
+        im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
+
+        if valor == 0:
+            self.__enhance += .4
+        elif valor == 1 and self.__enhance < 2:
+            self.__enhance += .4
+        elif valor == 2 and self.__enhance > 0:
+            self.__enhance -= .4
+
+        self.__corrigir_iluminacao_add.setEnabled(False if self.__enhance >= 2 else True)
+        self.__corrigir_iluminacao_rmv.setEnabled(False if self.__enhance <= 0 else True)
+
+        im1 = ImageEnhance.Color(im).enhance(self.__enhance)
+
+        filename = f'{self.__RESOURCES}corrigida.jpg'
+        im1.save(filename)
+        self.__viewer.adicionar_imagem(QPixmap(filename))
+
+    def __corrigir_nitidez(self, valor: int):
+        im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
+
+        if valor == 1 and self.__nitidez < 2:
+            self.__nitidez += .4
+        elif valor == 2 and self.__nitidez > 0:
+            self.__nitidez -= .4
+
+        self.__corrigir_nitidez_add.setEnabled(False if self.__nitidez >= 2 else True)
+        self.__corrigir_nitidez_rmv.setEnabled(False if self.__nitidez <= 0 else True)
+
+        im1 = ImageEnhance.Sharpness(im).enhance(self.__nitidez)
+
+        filename = f'{self.__RESOURCES}corrigida.jpg'
+        im1.save(filename)
+        self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __editar_gimp(self):
         try:
