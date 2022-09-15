@@ -386,11 +386,20 @@ class DoImageViewer(QMainWindow):
             dir_path = f"/{'/'.join(path.parts[1:-1])}/"
 
             if path.exists():
-                lista_imagens = [x for x in os.listdir(dir_path) if (x.find(".jpg") != -1) or (x.find(".png") != -1)]
+                lista_imagens_raw = [x for x in os.listdir(dir_path) if x.find('.') != -1]
+                lista_imagens_processadas = ['.'.join([x.split('.')[0], x.split('.')[1].lower()]) for x in
+                                             lista_imagens_raw]
+                lista_imagens = []
+
+                for item in lista_imagens_processadas:
+                    if item.split('.')[1] in self.__LISTA_EXTENSOES:
+                        lista_imagens.append(item)
+
+                # lista_imagens = [x for x in os.listdir(dir_path) if (x.find(".jpg") != -1) or (x.find(".png") != -1)]
 
                 imagem = None
                 if path.is_file():
-                    imagem = path.parts[-1]
+                    imagem = '.'.join([path.parts[-1].split('.')[0], path.parts[-1].split('.')[1].lower()])
 
                 try:
                     lista_numeros = sorted([x for x in lista_imagens if x[0].isdigit()],
