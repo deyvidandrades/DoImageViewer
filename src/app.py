@@ -1,10 +1,12 @@
 import os
+import random
 from datetime import datetime
 from math import fsum
 from pathlib import Path
 from subprocess import Popen
 from threading import Timer
 
+import pilgram
 from PIL import Image
 from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
@@ -271,43 +273,63 @@ class DoImageViewer(QMainWindow):
         menu_imagem.addAction(self.__usar_antialiasing)
 
         # MENU FILTROS
-        filtro_none = QAction("Sem filtro", self)
-        filtro_none.triggered.connect(lambda: self.__viewer.addicionar_filtro(0))
+        filtro_original = QAction("Original", self)
+        filtro_original.setShortcut("Ctrl+G")
+        filtro_original.triggered.connect(lambda: self.__adicionar_filtro(0))
 
-        filtro_plus = QAction("Plus", self)
-        filtro_plus.triggered.connect(lambda: self.__viewer.addicionar_filtro(1))
+        filtro_aden = QAction("Aden", self)
+        filtro_aden.triggered.connect(lambda: self.__adicionar_filtro(1))
 
-        filtro_dodge = QAction("Dodge", self)
-        filtro_dodge.triggered.connect(lambda: self.__viewer.addicionar_filtro(2))
+        filtro_clarendon = QAction("Clarendon", self)
+        filtro_clarendon.triggered.connect(lambda: self.__adicionar_filtro(2))
 
-        filtro_difference = QAction("Difference ", self)
-        filtro_difference.triggered.connect(lambda: self.__viewer.addicionar_filtro(3))
+        filtro_earlybird = QAction("Earlybird ", self)
+        filtro_earlybird.triggered.connect(lambda: self.__adicionar_filtro(3))
 
-        filtro_hard_light = QAction("HardLight", self)
-        filtro_hard_light.triggered.connect(lambda: self.__viewer.addicionar_filtro(4))
+        filtro_hudson = QAction("Hudson", self)
+        filtro_hudson.triggered.connect(lambda: self.__adicionar_filtro(4))
 
-        filtro_overlay = QAction("Overlay", self)
-        filtro_overlay.triggered.connect(lambda: self.__viewer.addicionar_filtro(5))
+        filtro_lark = QAction("Lark", self)
+        filtro_lark.triggered.connect(lambda: self.__adicionar_filtro(5))
 
-        filtro_lighten = QAction("Lighten", self)
-        filtro_lighten.triggered.connect(lambda: self.__viewer.addicionar_filtro(6))
+        filtro_lofi = QAction("Lofi", self)
+        filtro_lofi.triggered.connect(lambda: self.__adicionar_filtro(6))
 
-        menu_filtros = QMenu("&Filtros(debug)", self)
+        filtro_maven = QAction("Maven", self)
+        filtro_maven.triggered.connect(lambda: self.__adicionar_filtro(7))
+
+        filtro_reyes = QAction("Reyes", self)
+        filtro_reyes.triggered.connect(lambda: self.__adicionar_filtro(8))
+
+        filtro_valencia = QAction("Valencia", self)
+        filtro_valencia.triggered.connect(lambda: self.__adicionar_filtro(9))
+
+        filtro_walden = QAction("Walden", self)
+        filtro_walden.triggered.connect(lambda: self.__adicionar_filtro(10))
+
+        filtro_aleatorio = QAction("Filtro aleatório", self)
+        filtro_aleatorio.setShortcut("Ctrl+F")
+        filtro_aleatorio.triggered.connect(lambda: self.__adicionar_filtro(random.randint(1, 10)))
+
+        menu_filtros = QMenu("&Filtros", self)
         menu_filtros.setStyleSheet(
             """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
             QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
         )
 
-        menu_filtros.addAction(filtro_plus)
-        menu_filtros.addAction(filtro_lighten)
+        menu_filtros.addAction(filtro_aden)
+        menu_filtros.addAction(filtro_clarendon)
+        menu_filtros.addAction(filtro_earlybird)
+        menu_filtros.addAction(filtro_hudson)
+        menu_filtros.addAction(filtro_lark)
+        menu_filtros.addAction(filtro_lofi)
+        menu_filtros.addAction(filtro_maven)
+        menu_filtros.addAction(filtro_reyes)
+        menu_filtros.addAction(filtro_valencia)
+        menu_filtros.addAction(filtro_walden)
         menu_filtros.addSeparator()
-        menu_filtros.addAction(filtro_hard_light)
-        menu_filtros.addAction(filtro_difference)
-        menu_filtros.addSeparator()
-        menu_filtros.addAction(filtro_dodge)
-        menu_filtros.addAction(filtro_overlay)
-        menu_filtros.addSeparator()
-        menu_filtros.addAction(filtro_none)
+        menu_filtros.addAction(filtro_original)
+        menu_filtros.addAction(filtro_aleatorio)
 
         # MENU AJUDA
         sobre = QAction("&Sobre", self)
@@ -579,8 +601,50 @@ class DoImageViewer(QMainWindow):
 
         Config().set_config('editor', 'toolbar_diretorio', str(self.__diretorio_tool_bar.isVisible()))
 
-    def __adicionar_filtro(self, filtro: int):
-        self.__viewer.addicionar_filtro(filtro)
+    def __adicionar_filtro(self, fid: int):
+        # self.__adicionar_filtro(filtro)
+        im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
+        filtro = None
+
+        if fid == 0:
+            self.__recarregar_imagem()
+            self.setStatusTip("Filtro original")
+        if fid == 1:
+            filtro = pilgram.aden(im)
+            self.setStatusTip("Filtro aden")
+        elif fid == 2:
+            filtro = pilgram.clarendon(im)
+            self.setStatusTip("Filtro clarendon")
+        elif fid == 3:
+            filtro = pilgram.earlybird(im)
+            self.setStatusTip("Filtro earlybird")
+        elif fid == 4:
+            filtro = pilgram.hudson(im)
+            self.setStatusTip("Filtro hudson")
+        elif fid == 5:
+            filtro = pilgram.lark(im)
+            self.setStatusTip("Filtro lark")
+        elif fid == 6:
+            filtro = pilgram.lofi(im)
+            self.setStatusTip("Filtro lofi")
+        elif fid == 7:
+            filtro = pilgram.maven(im)
+            self.setStatusTip("Filtro maven")
+        elif fid == 8:
+            filtro = pilgram.reyes(im)
+            self.setStatusTip("Filtro reyes")
+        elif fid == 9:
+            filtro = pilgram.valencia(im)
+            self.setStatusTip("Filtro valencia")
+        elif fid == 10:
+            filtro = pilgram.walden(im)
+            self.setStatusTip("Filtro walden")
+
+        if filtro is not None:
+            filename = f'{self.__RESOURCES}filtro.jpg'
+            filtro.save(filename)
+
+            self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __mudar_antialiasing(self):
         config = Config()
