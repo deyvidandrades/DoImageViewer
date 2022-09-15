@@ -239,29 +239,6 @@ class ImageViewer(QWidget):
         self.m_pixmap = self.m_pixmap.transformed(rm)
         self.update()
 
-    def addicionar_filtro(self, fid: int):
-        # color burn = escurece
-        # plus aviva
-        # dodge aviva + escurece
-        # diference equilibra + satura
-        # hardLight satura
-        # Overlay escurece
-        # Lighten Clareia
-        if fid == 1:
-            self.__filtro = QPainter.CompositionMode.CompositionMode_Plus
-        elif fid == 2:
-            self.__filtro = QPainter.CompositionMode.CompositionMode_ColorDodge
-        elif fid == 3:
-            self.__filtro = QPainter.CompositionMode.CompositionMode_Difference
-        elif fid == 4:
-            self.__filtro = QPainter.CompositionMode.CompositionMode_HardLight
-        elif fid == 5:
-            self.__filtro = QPainter.CompositionMode.CompositionMode_Overlay
-        elif fid == 6:
-            self.__filtro = QPainter.CompositionMode.CompositionMode_Lighten
-        else:
-            self.__filtro = None
-
     def mudar_antialiasing(self, on: bool):
         self.__antialiasing = on
 

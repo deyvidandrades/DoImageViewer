@@ -602,7 +602,6 @@ class DoImageViewer(QMainWindow):
         Config().set_config('editor', 'toolbar_diretorio', str(self.__diretorio_tool_bar.isVisible()))
 
     def __adicionar_filtro(self, fid: int):
-        # self.__adicionar_filtro(filtro)
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
         filtro = None
 
