@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from math import fsum
 from pathlib import Path
 from subprocess import Popen
 from threading import Timer
@@ -17,7 +18,7 @@ from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
 class DoImageViewer(QMainWindow):
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
-    __VERSAO = 'v1.3.2'
+    __VERSAO = 'v1.4.0'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     def __init__(self, app: QApplication, caminho: str = ""):
@@ -239,6 +240,11 @@ class DoImageViewer(QMainWindow):
         inverter_h.setIcon(QIcon(self.__RESOURCES + 'horizontal-flip-svgrepo-com.svg'))
         inverter_h.triggered.connect(lambda: self.__viewer.inverter_horizontal())
 
+        crop_imagem = QAction("Recortar margens", self)
+        crop_imagem.setShortcut("Ctrl+x")
+        crop_imagem.setIcon(QIcon(self.__RESOURCES + 'crop-svgrepo-com.svg'))
+        crop_imagem.triggered.connect(lambda: self.__crop_margem())
+
         self.__usar_antialiasing = QAction("Suavizar imagem", self)
         self.__usar_antialiasing.setCheckable(True)
         self.__usar_antialiasing.setChecked(Config().get_config_boolean('editor', 'antialiasing'))
@@ -259,6 +265,8 @@ class DoImageViewer(QMainWindow):
         menu_imagem.addSeparator()
         menu_imagem.addAction(inverter_v)
         menu_imagem.addAction(inverter_h)
+        menu_imagem.addSeparator()
+        menu_imagem.addAction(crop_imagem)
         menu_imagem.addSeparator()
         menu_imagem.addAction(self.__usar_antialiasing)
 
@@ -612,6 +620,49 @@ class DoImageViewer(QMainWindow):
 
     def cancelar_timer(self):
         self.__timer.cancel()
+
+    def __crop_margem(self):
+        im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
+        pix = im.load()
+
+        # noinspection PyUnresolvedReferences
+        anterior = pix[0, 0]
+        atual = anterior
+
+        is_inverted = fsum(anterior) > 383  # rgb(255,255,255) = 765/2 = 383
+        contador = 0
+
+        for coluna in range(0, im.size[0]):
+            # noinspection PyUnresolvedReferences
+            atual = pix[coluna, round(im.size[1] / 2)]
+
+            if fsum(atual) <= fsum(anterior) and is_inverted:
+                anterior = atual
+                contador += 1
+
+            if fsum(atual) >= fsum(anterior) and not is_inverted:
+                anterior = atual
+                contador += 1
+
+        borda_vertical = False
+
+        for linha in range(0, im.size[1]):
+            # noinspection PyUnresolvedReferences
+            if atual == pix[round(contador / 2), round(linha)]:
+                borda_vertical = True
+
+        if borda_vertical:
+            x1 = contador
+            y1 = 0
+            x2 = im.size[0] - x1
+            y2 = im.size[1]
+
+            im1 = im.crop((x1, y1, x2, y2))
+
+            filename = f'{self.__RESOURCES}croped.jpg'
+            im1.save(filename)
+
+            self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __editar_gimp(self):
         try:
