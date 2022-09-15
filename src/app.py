@@ -208,7 +208,7 @@ class DoImageViewer(QMainWindow):
         filtro_aleatorio.setIcon(QIcon(self.__RESOURCES + 'flip-svgrepo-com'))
         filtro_aleatorio.triggered.connect(lambda: self.__adicionar_filtro(random.randint(1, 10)))
 
-        menu_filtros = QMenu("&Filtros",self)
+        menu_filtros = QMenu("&Filtros", self)
         menu_filtros.setStyleSheet(
             """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
             QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
