@@ -765,6 +765,8 @@ class DoImageViewer(QMainWindow):
             self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __corrigir_iluminacao(self, valor: int):
+        ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
+
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
 
         if valor == 0:
@@ -779,11 +781,13 @@ class DoImageViewer(QMainWindow):
 
         im1 = ImageEnhance.Color(im).enhance(self.__enhance)
 
-        filename = f'{self.__RESOURCES}corrigida.jpg'
+        filename = f'{self.__RESOURCES}corrigida.{ext}'
+
         im1.save(filename)
         self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __corrigir_nitidez(self, valor: int):
+        ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
 
         if valor == 1 and self.__nitidez < 2:
@@ -796,7 +800,7 @@ class DoImageViewer(QMainWindow):
 
         im1 = ImageEnhance.Sharpness(im).enhance(self.__nitidez)
 
-        filename = f'{self.__RESOURCES}corrigida.jpg'
+        filename = f'{self.__RESOURCES}corrigida.{ext}'
         im1.save(filename)
         self.__viewer.adicionar_imagem(QPixmap(filename))
 
