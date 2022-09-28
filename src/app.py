@@ -20,11 +20,17 @@ from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
 class DoImageViewer(QMainWindow):
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
+    __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
     __VERSAO = 'v1.4.2'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     def __init__(self, app: QApplication, caminho: str = ""):
         super().__init__()
+
+        # Configurando pasta de configurações
+        if not os.path.isdir(self.__CAMINHO_HOME):
+            os.mkdir(self.__CAMINHO_HOME)
+
         # carregar configurações
         config = Config()
         if config.get_config('editor', 'caminho') == "\"\"":
@@ -722,6 +728,7 @@ class DoImageViewer(QMainWindow):
         self.__timer.cancel()
 
     def __crop_margem(self):
+        ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
         pix = im.load()
 
@@ -759,7 +766,7 @@ class DoImageViewer(QMainWindow):
 
             im1 = im.crop((x1, y1, x2, y2))
 
-            filename = f'{self.__RESOURCES}croped.jpg'
+            filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
             im1.save(filename)
 
             self.__viewer.adicionar_imagem(QPixmap(filename))
@@ -781,7 +788,7 @@ class DoImageViewer(QMainWindow):
 
         im1 = ImageEnhance.Color(im).enhance(self.__enhance)
 
-        filename = f'{self.__RESOURCES}corrigida.{ext}'
+        filename = f'{self.__CAMINHO_HOME}/corrigida.{ext}'
 
         im1.save(filename)
         self.__viewer.adicionar_imagem(QPixmap(filename))
@@ -800,7 +807,7 @@ class DoImageViewer(QMainWindow):
 
         im1 = ImageEnhance.Sharpness(im).enhance(self.__nitidez)
 
-        filename = f'{self.__RESOURCES}corrigida.{ext}'
+        filename = f'{self.__CAMINHO_HOME}/corrigida.{ext}'
         im1.save(filename)
         self.__viewer.adicionar_imagem(QPixmap(filename))
 

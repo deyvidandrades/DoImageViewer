@@ -1,18 +1,33 @@
 """
 Classe responsável pelo gerenciamento de configurações '.ini' do programa
 """
-import os
 from configparser import ConfigParser
+from pathlib import Path
 
 
 class Config:
     """
     Classe de configurações
     """
-    __CAMINHO = os.getcwd() + '/config.ini'
+    __CAMINHO = f'{str(Path.home())}/.DoImageViewer/config.ini'
 
     def __init__(self) -> None:
         super().__init__()
+
+        if not Path(self.__CAMINHO).is_file():
+            with open(self.__CAMINHO, 'a') as file:
+                file.writelines([
+                    '[editor]\n',
+                    f'caminho = {Path.home()}\n',
+                    'toolbar_diretorio = True\n',
+                    'antialiasing = True\n',
+                    '[window]\n',
+                    'numero = 1\n',
+                    'nome = None\n',
+                    'tamanho = 958, 1008\n',
+                    'posicao = 0, 0\n'
+                ])
+
         self.__config = ConfigParser()
         self.__config.read(self.__CAMINHO)
 
