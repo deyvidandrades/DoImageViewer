@@ -21,7 +21,7 @@ class DoImageViewer(QMainWindow):
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.4.2'
+    __VERSAO = 'v1.4.3'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     def __init__(self, app: QApplication, caminho: str = ""):
@@ -61,7 +61,7 @@ class DoImageViewer(QMainWindow):
 
         # variáveis de controle
         self.__viewer = ImageViewer(parent=self, antialiasing=antialiasing)
-        self.__caminho = self.__processar_caminho(caminho)
+        # self.__caminho = self.__processar_caminho(caminho)
         self.__diretorio_tool_bar = QToolBar("Diretorio", self)
         self.__diretorio_tool_bar.setVisible(config.get_config_boolean('editor', 'toolbar_diretorio'))
         self.tamanho_icones = QSize(24, 24)
@@ -78,7 +78,7 @@ class DoImageViewer(QMainWindow):
         self.label_tamanho = QLabel("")
         self.label_lista = QLabel("Nenhuma foto carregada")
         self.label_zoom = QLabel("")
-        self.__label_diretorio = QLabelClick(self.__caminho)
+        self.__label_diretorio = QLabelClick()
 
         # configuração do layout principal
         self.__layout_principal = QHBoxLayout()
@@ -95,7 +95,7 @@ class DoImageViewer(QMainWindow):
         self.__configurar_tool_bar()
         self.__configurar_status_bar()
 
-        self.__carregar_imagem()
+        self.__carregar_imagem(caminho)
         self.setWindowTitle(f"Do Image Viewer {self.__VERSAO}")
 
     def changeEvent(self, event):
@@ -120,8 +120,7 @@ class DoImageViewer(QMainWindow):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
 
         if files:
-            self.__caminho = files[0]
-            self.__carregar_imagem()
+            self.__carregar_imagem(files[0])
 
     def __configurar_gui(self):
 
@@ -150,6 +149,25 @@ class DoImageViewer(QMainWindow):
         abrir_foto.setShortcut("Ctrl+O")
         abrir_foto.triggered.connect(self.__abrir_imagem)
 
+        array_actions = Config().get_config('editor', 'recentes').split(',')
+
+        menu_abrir_recentes = QMenu("&Abrir recentes", self)
+        menu_abrir_recentes.setStyleSheet(
+            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
+            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
+        )
+
+        acao_1 = QAction(array_actions[0], self)
+        acao_1.triggered.connect(lambda: self.__carregar_imagem(array_actions[0]))
+
+        acao_2 = QAction(array_actions[1], self)
+        acao_2.triggered.connect(lambda: self.__carregar_imagem(array_actions[1]))
+
+        acao_3 = QAction(array_actions[2], self)
+        acao_3.triggered.connect(lambda: self.__carregar_imagem(array_actions[2]))
+
+        menu_abrir_recentes.addActions([acao_1, acao_2, acao_3])
+
         salvar_foto = QAction("Salvar", self)
         salvar_foto.setShortcut("Ctrl+S")
         salvar_foto.triggered.connect(self.__salvar_imagem)
@@ -168,6 +186,7 @@ class DoImageViewer(QMainWindow):
             QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
         )
         menu_arquivo.addAction(abrir_foto)
+        menu_arquivo.addMenu(menu_abrir_recentes)
         menu_arquivo.addSeparator()
         menu_arquivo.addAction(salvar_foto)
         menu_arquivo.addAction(salvar_foto_como)
@@ -453,9 +472,9 @@ class DoImageViewer(QMainWindow):
 
         return f'{path}{arquivo}'
 
-    def __carregar_imagem(self):
+    def __carregar_imagem(self, caminho: str):
         try:
-            path = Path(self.__caminho)
+            path = Path(self.__processar_caminho(caminho))
             dir_path = f"/{'/'.join(path.parts[1:-1])}/"
 
             if path.exists():
@@ -515,6 +534,18 @@ class DoImageViewer(QMainWindow):
                 self.__viewer.adicionar_imagem(QPixmap(f'{dir_path}{lista_final[indice]}'))
 
                 Config().set_config('editor', 'caminho', dir_path)
+
+                lista_recentes = Config().get_config('editor', 'recentes').split(',')
+                if lista_recentes[0] != "None":
+                    lista_recentes.append(f'{dir_path}{lista_final[indice]}')
+
+                    if len(lista_recentes) > 3:
+                        Config().set_config('editor', 'recentes', ','.join(lista_recentes[1:]))
+                    else:
+                        Config().set_config('editor', 'recentes', ','.join(lista_recentes))
+                else:
+                    Config().set_config('editor', 'recentes', f'{dir_path}{lista_final[indice]}')
+
         except IndexError:
             pass
 
@@ -590,8 +621,7 @@ class DoImageViewer(QMainWindow):
             "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
         )
 
-        self.__caminho = filename
-        self.__carregar_imagem()
+        self.__carregar_imagem(filename)
 
     def __abrir_imagem(self):
 
@@ -604,33 +634,29 @@ class DoImageViewer(QMainWindow):
 
         if filename != "":
             Config().set_config('editor', 'caminho', filename)
-            self.__caminho = filename
-            self.__carregar_imagem()
+            self.__carregar_imagem(filename)
 
     def __salvar_imagem(self):
         filename = f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'
 
         if filename != "":
             self.__viewer.m_pixmap.save(filename)
-            self.__caminho = filename
-            self.__carregar_imagem()
+            self.__carregar_imagem(filename)
 
     def __salvar_imagem_como(self):
         filename, _ = QFileDialog.getSaveFileName(
             self,
             "Salvar foto",
-            self.__caminho,
+            f'{self.__info_dir["path"]}',
             "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
         )
         if filename != "":
             self.__viewer.m_pixmap.save(filename)
-            self.__caminho = filename
-            self.__carregar_imagem()
+            self.__carregar_imagem(filename)
 
     def __recarregar_imagem(self):
         filename = f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'
-        self.__caminho = filename
-        self.__carregar_imagem()
+        self.__carregar_imagem(filename)
 
     def __abrir_info_dialog(self):
         SobreDialog(self.__VERSAO, self).exec()
