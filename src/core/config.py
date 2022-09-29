@@ -21,7 +21,7 @@ class Config:
                     f'caminho = {Path.home()}\n',
                     'toolbar_diretorio = True\n',
                     'antialiasing = True\n',
-                    'recentes = None\n',
+                    'recentes = ,,\n',
                     '[window]\n',
                     'numero = 1\n',
                     'nome = None\n',
