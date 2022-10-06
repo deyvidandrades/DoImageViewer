@@ -130,58 +130,27 @@ class ImageViewer(QWidget):
         self.update()
 
     def __calcular_centro(self):
-
-        # if self.__rotacao == 90 or self.__rotacao == 270:
-        #     self.m_delta = QPoint(self.m_delta.y(),self.m_delta.x())
-        #     self.update()
-
-        # tela_x = int(self.m_pixmap.size().width() / 4)
-        # tela_y = int(self.m_pixmap.size().height() / 4)
-        # print(QPoint(tela_x, tela_y))
-        # print(QPoint(tela_y, tela_x))
-        # self.m_delta = QPoint(tela_y, tela_x)
-
         try:
-            tela_x = self.parent().parent().width()
-            tela_y = self.parent().parent().height()
+            # definição de tamanhos
+            tela_y = self.size().height()
+            tela_x = self.size().width()
             pixm_x = self.m_pixmap.size().width()
             pixm_y = self.m_pixmap.size().height()
 
-            if self.__rotacao == 90 or self.__rotacao == 270:
-                pixm_y = self.m_pixmap.size().width()
-                pixm_x = self.m_pixmap.size().height()
+            # definição do lado maior e da orientação da imagem
+            lado_maior = max(pixm_x, pixm_y)
+            vertical = False if pixm_x >= pixm_y else True
 
-                self.m_delta = (QPoint(pixm_x, pixm_y) - QPoint(pixm_y, pixm_x)) / 2
+            # calculo do zoom mínimo
+            if vertical:
+                zoom_minimo = tela_y / lado_maior
             else:
-                self.m_delta = QPoint(0, 0)
+                zoom_minimo = tela_x / lado_maior
 
-            x = round(tela_x / pixm_x, 3)
-            y = round(tela_y / pixm_y, 3)
+            if lado_maior < min(tela_x, tela_y):
+                zoom_minimo = round(zoom_minimo, 1)
 
-            # minimo = (x if max(x, y) > .5 else .5) - .1
-            if pixm_x > pixm_y:
-                minimo = (x if x > .5 else .5) - .1
-            else:
-                minimo = (y if y > .5 else .5) - .1
-
-            if minimo > 1:
-                minimo = 1
-
-            # if tela_x > 800 and minimo > 1:
-            #     minimo_maximizado = minimo - (
-            #             (max(tela_x, tela_y) - max(pixm_x, pixm_y)) / max(pixm_x, pixm_y) + .1
-            #     ) + .4
-            #
-            #     if minimo_maximizado > 0:
-            #         minimo = minimo_maximizado
-
-            #     if pixm_x > pixm_y:
-            #         minimo = ((tela_x - pixm_x) / pixm_x + .1)
-            #     else:
-            #         minimo = ((tela_y - pixm_y) / pixm_y + .1)
-
-            self.m_scale = minimo
-
+            self.m_scale = zoom_minimo
             self.update()
         except ZeroDivisionError:
             pass
