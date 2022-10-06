@@ -158,12 +158,15 @@ class DoImageViewer(QMainWindow):
         )
 
         acao_1 = QAction(array_actions[0], self)
+        acao_1.setShortcut("Ctrl+Shift+1")
         acao_1.triggered.connect(lambda: self.__carregar_imagem(array_actions[0]))
 
         acao_2 = QAction(array_actions[1], self)
+        acao_2.setShortcut("Ctrl+Shift+2")
         acao_2.triggered.connect(lambda: self.__carregar_imagem(array_actions[1]))
 
         acao_3 = QAction(array_actions[2], self)
+        acao_3.setShortcut("Ctrl+Shift+3")
         acao_3.triggered.connect(lambda: self.__carregar_imagem(array_actions[2]))
 
         menu_abrir_recentes.addActions([acao_1, acao_2, acao_3])
