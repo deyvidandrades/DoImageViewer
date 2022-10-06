@@ -132,8 +132,8 @@ class ImageViewer(QWidget):
     def __calcular_centro(self):
         try:
             # definição de tamanhos
-            tela_y = self.size().height()
-            tela_x = self.size().width()
+            tela_y = self.parentWidget().parentWidget().height() - 73  # self.size().height()
+            tela_x = self.parentWidget().parentWidget().width() - 70  # self.size().width()
             pixm_x = self.m_pixmap.size().width()
             pixm_y = self.m_pixmap.size().height()
 
