@@ -134,8 +134,18 @@ class ImageViewer(QWidget):
             # definição de tamanhos
             tela_y = self.parentWidget().parentWidget().height() - 73  # self.size().height()
             tela_x = self.parentWidget().parentWidget().width() - 70  # self.size().width()
-            pixm_x = self.m_pixmap.size().width()
-            pixm_y = self.m_pixmap.size().height()
+
+            # Verifica se as dimensões estão invertidas, como resultado da rotação da imagem
+            if self.__rotacao == 90 or self.__rotacao == 270:
+                pixm_y = self.m_pixmap.size().width()
+                pixm_x = self.m_pixmap.size().height()
+
+                self.m_delta = (QPoint(pixm_x, pixm_y) - QPoint(pixm_y, pixm_x)) / 2
+            else:
+                pixm_x = self.m_pixmap.size().width()
+                pixm_y = self.m_pixmap.size().height()
+
+                self.m_delta = QPoint(0, 0)
 
             # definição do lado maior e da orientação da imagem
             lado_maior = max(pixm_x, pixm_y)
