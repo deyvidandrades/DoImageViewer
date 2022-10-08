@@ -643,7 +643,7 @@ class DoImageViewer(QMainWindow):
         filename = f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}'
 
         if filename != "":
-            self.__viewer.m_pixmap.save(filename)
+            self.__viewer.m_pixmap.save(filename, quality=100)
             self.__carregar_imagem(filename)
 
     def __salvar_imagem_como(self):
@@ -654,7 +654,7 @@ class DoImageViewer(QMainWindow):
             "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
         )
         if filename != "":
-            self.__viewer.m_pixmap.save(filename)
+            self.__viewer.m_pixmap.save(filename, quality=100)
             self.__carregar_imagem(filename)
 
     def __recarregar_imagem(self):
@@ -713,7 +713,7 @@ class DoImageViewer(QMainWindow):
 
         if filtro is not None:
             filename = f'{self.__RESOURCES}filtro.jpg'
-            filtro.save(filename)
+            filtro.save(filename, quality=100)
 
             self.__viewer.adicionar_imagem(QPixmap(filename))
 
@@ -796,7 +796,7 @@ class DoImageViewer(QMainWindow):
             im1 = im.crop((x1, y1, x2, y2))
 
             filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
-            im1.save(filename)
+            im1.save(filename, quality=100)
 
             self.__viewer.adicionar_imagem(QPixmap(filename))
 
@@ -819,7 +819,7 @@ class DoImageViewer(QMainWindow):
 
         filename = f'{self.__CAMINHO_HOME}/corrigida.{ext}'
 
-        im1.save(filename)
+        im1.save(filename, quality=100)
         self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __corrigir_nitidez(self, valor: int):
@@ -837,7 +837,7 @@ class DoImageViewer(QMainWindow):
         im1 = ImageEnhance.Sharpness(im).enhance(self.__nitidez)
 
         filename = f'{self.__CAMINHO_HOME}/corrigida.{ext}'
-        im1.save(filename)
+        im1.save(filename, quality=100)
         self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __editar_gimp(self):
