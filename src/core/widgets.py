@@ -83,7 +83,7 @@ class ImageViewer(QWidget):
     def wheelEvent(self, event: QWheelEvent):
         """
         Sobrescrição do método da superclasse
-        :param event: Evento de 'scroll' do mouse
+        :param event: Evento de 'scroll'
         :return: None
         """
         if event.angleDelta().y() > 0:
