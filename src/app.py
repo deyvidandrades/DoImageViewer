@@ -5,6 +5,7 @@ from math import fsum
 from pathlib import Path
 from subprocess import Popen
 from threading import Timer
+from urllib.request import urlretrieve
 
 import pilgram
 from PIL import Image, ImageEnhance
@@ -21,9 +22,10 @@ class DoImageViewer(QMainWindow):
     __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.4.7'
+    __VERSAO = 'v1.4.8'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, app: QApplication, caminho: str = ""):
         super().__init__()
 
@@ -39,6 +41,7 @@ class DoImageViewer(QMainWindow):
         antialiasing = config.get_config_boolean('editor', 'antialiasing')
 
         # widget da aplicação
+        app.aboutToQuit.connect(self.on_exit)
         self.__app = app
 
         # configurações da tela
@@ -95,7 +98,12 @@ class DoImageViewer(QMainWindow):
         self.__configurar_tool_bar()
         self.__configurar_status_bar()
 
-        self.__carregar_imagem(caminho)
+        # Verifica se é url
+        if caminho.find("http") != -1:
+            self.__carregar_imagem(self.__processar_url(caminho))
+        else:
+            self.__carregar_imagem(caminho)
+
         self.setWindowTitle(f"Do Image Viewer {self.__VERSAO}")
 
     def changeEvent(self, event):
@@ -121,6 +129,47 @@ class DoImageViewer(QMainWindow):
 
         if files:
             self.__carregar_imagem(files[0])
+
+    def on_exit(self):
+        self.cancelar_timer()
+
+        lista_imagens_raw = [x for x in os.listdir(self.__CAMINHO_HOME) if x.find('.') != -1]
+        lista_imagens_remover = [x for x in lista_imagens_raw if x.split('.')[1] in self.__LISTA_EXTENSOES]
+
+        for item in lista_imagens_remover:
+            os.remove(f'{self.__CAMINHO_HOME}/{item}')
+
+        try:
+            screen = QApplication.screenAt(QApplication.activeWindow().pos())
+
+            Config().set_config('window', 'nome', screen.name())
+
+            Config().set_config(
+                'window', 'tamanho',
+                f'{QApplication.activeWindow().size().width()},{QApplication.activeWindow().size().height()}'
+            )
+
+            Config().set_config(
+                'window', 'posicao',
+                f'{QApplication.activeWindow().pos().x()},{QApplication.activeWindow().pos().y()}'
+            )
+        except AttributeError:
+            pass
+
+    def __processar_url(self, url: str) -> str:
+
+        formato = None
+        caminho = Path.home()
+
+        for item in self.__LISTA_EXTENSOES:
+            if url.find(item) != -1:
+                formato = item
+
+        if formato is not None:
+            caminho = f'{self.__CAMINHO_HOME}/tmp.{formato}'
+            urlretrieve(url, caminho)
+
+        return caminho
 
     def __configurar_gui(self):
 
