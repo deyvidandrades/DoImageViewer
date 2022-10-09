@@ -1,5 +1,6 @@
 import os
 import random
+from dataclasses import dataclass
 from datetime import datetime
 from math import fsum
 from pathlib import Path
@@ -18,11 +19,18 @@ from src.core.config import Config
 from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
 
 
+@dataclass
+class Theme:
+    color_primary: str = '#1b2224'
+    color_secondary: str = '#263033'
+    color_text: str = '#fafafa'
+    color_accent: str = '#1D63D1'
+
+
 class DoImageViewer(QMainWindow):
-    __BACKGROUND_COLOR = '#1b2224'  # f0f0f0
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.4.8'
+    __VERSAO = 'v1.4.9'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
@@ -45,7 +53,10 @@ class DoImageViewer(QMainWindow):
         self.__app = app
 
         # configurações da tela
-        self.setStyleSheet("QMainWindow {background-color: " + self.__BACKGROUND_COLOR + ";color: #f0f0f0;}")
+        self.setStyleSheet(
+            "QMainWindow {background-color: " + Theme.color_primary +
+            ";color: " + Theme.color_text + ";}"
+        )
         self.setWindowIcon(QIcon(QPixmap(self.__RESOURCES + 'image-svgrepo-com.svg')))
         self.setWindowTitle(f"Do Image Viewer {self.__VERSAO}")
         self.setAutoFillBackground(True)
@@ -193,6 +204,12 @@ class DoImageViewer(QMainWindow):
 
     # noinspection PyUnresolvedReferences
     def __configurar_menu(self):
+        # Style
+        stylesheet = "QMenu {background-color:" + Theme.color_secondary + \
+                     ";}QMenu::item{color:" + Theme.color_text + \
+                     ";}QMenu::item:selected {background-color: " + Theme.color_accent + \
+                     ";color:" + Theme.color_text + ";}"
+
         # MENU ARQUIVO
         abrir_foto = QAction("&Abrir", self)
         abrir_foto.setShortcut("Ctrl+O")
@@ -201,10 +218,7 @@ class DoImageViewer(QMainWindow):
         array_actions = Config().get_config('editor', 'recentes').split(',')
 
         menu_abrir_recentes = QMenu("&Abrir recentes", self)
-        menu_abrir_recentes.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
+        menu_abrir_recentes.setStyleSheet(stylesheet)
 
         acao_1 = QAction(array_actions[0], self)
         acao_1.setShortcut("Ctrl+Shift+1")
@@ -233,10 +247,7 @@ class DoImageViewer(QMainWindow):
         sair.triggered.connect(lambda: self.__app.exit(0))
 
         menu_arquivo = QMenu("&Arquivo", self)
-        menu_arquivo.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
+        menu_arquivo.setStyleSheet(stylesheet)
         menu_arquivo.addAction(abrir_foto)
         menu_arquivo.addMenu(menu_abrir_recentes)
         menu_arquivo.addSeparator()
@@ -286,10 +297,7 @@ class DoImageViewer(QMainWindow):
         filtro_aleatorio.triggered.connect(lambda: self.__adicionar_filtro(random.randint(1, 10)))
 
         menu_filtros = QMenu("&Filtros", self)
-        menu_filtros.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
+        menu_filtros.setStyleSheet(stylesheet)
 
         menu_filtros.addAction(filtro_aden)
         menu_filtros.addAction(filtro_clarendon)
@@ -325,10 +333,7 @@ class DoImageViewer(QMainWindow):
         crop_imagem.triggered.connect(lambda: self.__crop_margem())
 
         menu_editar = QMenu("&Editar", self)
-        menu_editar.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
+        menu_editar.setStyleSheet(stylesheet)
         menu_editar.addAction(corrigir_iluminacao)
         menu_editar.addSeparator()
         menu_editar.addAction(self.__corrigir_iluminacao_add)
@@ -372,10 +377,7 @@ class DoImageViewer(QMainWindow):
         apresentacao_slide.triggered.connect(lambda: self.__set_slide())
 
         menu_visualizar = QMenu("&Visualizar", self)
-        menu_visualizar.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
+        menu_visualizar.setStyleSheet(stylesheet)
         menu_visualizar.addAction(centralizar)
         menu_visualizar.addSeparator()
         menu_visualizar.addAction(ampliar)
@@ -428,10 +430,7 @@ class DoImageViewer(QMainWindow):
         self.__usar_antialiasing.triggered.connect(lambda: self.__mudar_antialiasing())
 
         menu_imagem = QMenu("&Imagem", self)
-        menu_imagem.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
+        menu_imagem.setStyleSheet(stylesheet)
         menu_imagem.addAction(proxima_imagem)
         menu_imagem.addAction(imagem_anterior)
         menu_imagem.addSeparator()
@@ -453,17 +452,16 @@ class DoImageViewer(QMainWindow):
         editar_gimp.triggered.connect(self.__editar_gimp)
 
         menu_ajuda = QMenu("&Ajuda", self)
-        menu_ajuda.setStyleSheet(
-            """QMenu {background-color:#263033;} QMenu::item{color:#fafafa;} 
-            QMenu::item:selected {background-color: #1D63D1; color:#fafafa;}"""
-        )
+        menu_ajuda.setStyleSheet(stylesheet)
 
         menu_ajuda.addAction(sobre)
         menu_ajuda.addSeparator()
         menu_ajuda.addAction(editar_gimp)
 
         # BARRA DE MENU
-        self.menuBar().setStyleSheet("background-color: #263033; color: #f6f6f6; padding: 2px;")
+        self.menuBar().setStyleSheet(
+            f"background-color: {Theme.color_secondary}; color: {Theme.color_text}; padding: 2px;"
+        )
         self.menuBar().setAutoFillBackground(True)
         self.menuBar().addMenu(menu_arquivo)
         self.menuBar().addMenu(menu_editar)
@@ -477,17 +475,19 @@ class DoImageViewer(QMainWindow):
 
         # Barra de formatação
         self.__diretorio_tool_bar.setStyleSheet(
-            """
-            QToolBar {background-color:#263033; border:None;} QToolBar::item{color:#fafafa;} QToolBar::item:selected 
-            {background-color: #1D63D1; color:#fafafa;}
-            """
+            "QToolBar {background-color:" + Theme.color_secondary +
+            "; border:None;}QToolBar::item{color:" + Theme.color_text +
+            ";} QToolBar::item:selected{background-color: " + Theme.color_secondary +
+            "; color:" + Theme.color_text + ";}"
         )
         self.__diretorio_tool_bar.setFloatable(False)
         self.__diretorio_tool_bar.setMovable(False)
         self.__diretorio_tool_bar.setIconSize(tamanho_icones)
         self.__diretorio_tool_bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
-        self.__label_diretorio.setStyleSheet("""QLabel {color: #fafafa; font-weight:italic; padding:2px;}""")
+        self.__label_diretorio.setStyleSheet(
+            "QLabel {color: " + Theme.color_text + "; font-weight:italic; padding:2px;}"
+        )
         self.__label_diretorio.clicked.connect(lambda: self.__mudar_diretorio())
         self.__label_diretorio.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.__label_diretorio.setStatusTip('Carregar diretório anterior')
@@ -501,7 +501,11 @@ class DoImageViewer(QMainWindow):
         self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.__diretorio_tool_bar)
 
     def __configurar_status_bar(self):
-        self.statusBar().setStyleSheet("background-color: #263033; color:#f6f6f6; padding: 2px; border: None;")
+        self.statusBar().setStyleSheet(
+            "background-color: " + Theme.color_secondary +
+            "; color:" + Theme.color_text +
+            "; padding: 2px; border: None;"
+        )
         self.statusBar().setSizeGripEnabled(False)
         self.statusBar().addWidget(self.label_tamanho, 1)
         self.statusBar().addWidget(self.label_zoom, 0)
@@ -711,7 +715,7 @@ class DoImageViewer(QMainWindow):
         self.__carregar_imagem(filename)
 
     def __abrir_info_dialog(self):
-        SobreDialog(self.__VERSAO, self).exec()
+        SobreDialog(self.__VERSAO, Theme(), self).exec()
 
     def __exibir_diretorio(self):
         config = Config().get_config_boolean('editor', 'toolbar_diretorio')

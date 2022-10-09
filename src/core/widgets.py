@@ -239,23 +239,26 @@ class QLabelClick(QLabel):
 
 
 class SobreDialog(QDialog):
-    def __init__(self, versao: str, parent=None):
+    def __init__(self, versao: str, theme, parent=None):
         super().__init__(parent)
         self.setWindowTitle(f"DoImageViewer {versao}")
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.NoButton)
-        self.setStyleSheet("QDialog {background-color: #1b2224;color: #f0f0f0;}")
+        self.setStyleSheet(
+            "QDialog {background-color: " + theme.color_primary +
+            ";color: " + theme.color_text + ";}"
+        )
 
         self.layout = QVBoxLayout()
         label_frase = QLabel("Um visualizador de imagens simplista")
-        label_frase.setStyleSheet("""color: #f0f0f0;""")
+        label_frase.setStyleSheet("color: " + theme.color_text + ";")
         label_copy = QLabel(f"Copyright {chr(0xa9)} 2021- "
                             f"{str(datetime.date.today().year)} Deyvid A. Silva <deyvid.asilva@gmail.com>")
-        label_copy.setStyleSheet("""color: #f0f0f0;""")
+        label_copy.setStyleSheet("color: " + theme.color_text + ";")
         label_site = QLabel(
             """<a href="https://www.github.com/deyvidandrades/doimageviewer/">
             https://www.github.com/deyvidandrades/doimageviewer/</a>"""
         )
-        label_site.setStyleSheet("""color: #f0f0f0;""")
+        label_site.setStyleSheet("color: " + theme.color_text + ";")
         label_site.setOpenExternalLinks(True)
 
         self.layout.addWidget(label_frase)
