@@ -1,4 +1,5 @@
 import os
+import platform
 import random
 from dataclasses import dataclass
 from datetime import datetime
@@ -30,7 +31,7 @@ class Theme:
 class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.4.9'
+    __VERSAO = 'v1.5.0'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
@@ -234,6 +235,14 @@ class DoImageViewer(QMainWindow):
 
         menu_abrir_recentes.addActions([acao_1, acao_2, acao_3])
 
+        menu_abrir_janela = QAction("Nova janela", self)
+        menu_abrir_janela.setShortcut("Ctrl+N")
+        menu_abrir_janela.triggered.connect(self.__abrir_nova_janela)
+
+        menu_abrir_em_janela = QAction("&Abrir em nova janela", self)
+        menu_abrir_em_janela.setShortcut("Ctrl+Shift+O")
+        menu_abrir_em_janela.triggered.connect(self.__abrir_foto_nova_janela)
+
         salvar_foto = QAction("Salvar", self)
         salvar_foto.setShortcut("Ctrl+S")
         salvar_foto.triggered.connect(self.__salvar_imagem)
@@ -249,6 +258,9 @@ class DoImageViewer(QMainWindow):
         menu_arquivo = QMenu("&Arquivo", self)
         menu_arquivo.setStyleSheet(stylesheet)
         menu_arquivo.addAction(abrir_foto)
+        menu_arquivo.addAction(menu_abrir_em_janela)
+        menu_arquivo.addSeparator()
+        menu_arquivo.addAction(menu_abrir_janela)
         menu_arquivo.addMenu(menu_abrir_recentes)
         menu_arquivo.addSeparator()
         menu_arquivo.addAction(salvar_foto)
@@ -892,6 +904,27 @@ class DoImageViewer(QMainWindow):
         filename = f'{self.__CAMINHO_HOME}/corrigida.{ext}'
         im1.save(filename, quality=100)
         self.__viewer.adicionar_imagem(QPixmap(filename))
+
+    @staticmethod
+    def __abrir_nova_janela(caminho: str = ""):
+        try:
+            os.system(f'cd {os.getcwd()}; python __main__.py "{caminho}";cd;')
+        except FileNotFoundError:
+            if platform.system() == "Windows":
+                os.system(f'{os.getcwd()}/Do Image Viewer.exe "{caminho}"')
+            else:
+                os.system(f'./{os.getcwd()}/Do\ Image\ Viewer "{caminho}"')
+
+    def __abrir_foto_nova_janela(self):
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Abrir foto",
+            Config().get_config('editor', 'caminho'),
+            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
+        )
+
+        if filename != "":
+            self.__abrir_nova_janela(filename)
 
     def __editar_gimp(self):
         try:

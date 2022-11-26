@@ -1,4 +1,4 @@
-pillow~=9.2.0
+pillow~=9.3.0
 pilgram~=1.2.1
 configparser==5.3.0
 PyQt6==6.4.0
