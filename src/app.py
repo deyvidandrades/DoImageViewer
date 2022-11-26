@@ -31,7 +31,7 @@ class Theme:
 class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.5.0'
+    __VERSAO = 'v1.5.1'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
@@ -907,13 +907,13 @@ class DoImageViewer(QMainWindow):
 
     @staticmethod
     def __abrir_nova_janela(caminho: str = ""):
-        try:
+        if "__main__.py" in os.listdir(os.getcwd()):
             os.system(f'cd {os.getcwd()}; python __main__.py "{caminho}";cd;')
-        except FileNotFoundError:
+        else:
             if platform.system() == "Windows":
                 os.system(f'{os.getcwd()}/Do Image Viewer.exe "{caminho}"')
             else:
-                os.system(f'./{os.getcwd()}/Do\ Image\ Viewer "{caminho}"')
+                os.system(f'cd {os.getcwd()}; ./Do\ Image\ Viewer "{caminho}";cd;')
 
     def __abrir_foto_nova_janela(self):
         filename, _ = QFileDialog.getOpenFileName(
