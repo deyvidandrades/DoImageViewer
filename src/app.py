@@ -31,7 +31,7 @@ class Theme:
 class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.5.1'
+    __VERSAO = 'v1.5.2'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
@@ -93,6 +93,15 @@ class DoImageViewer(QMainWindow):
         self.label_tamanho = QLabel("")
         self.label_lista = QLabel("Nenhuma foto carregada")
         self.label_zoom = QLabel("")
+
+        self.label_cor = QLabelClick("")
+        self.label_cor.clicked.connect(lambda: self.__copiar_cor_para_transferencia())
+        self.label_cor.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+
+        self.label_cor_nome = QLabelClick("")
+        self.label_cor_nome.clicked.connect(lambda: self.__copiar_cor_para_transferencia())
+        self.label_cor_nome.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+
         self.__label_diretorio = QLabelClick()
 
         # configuração do layout principal
@@ -344,6 +353,11 @@ class DoImageViewer(QMainWindow):
         crop_imagem.setIcon(QIcon(self.__RESOURCES + 'crop-svgrepo-com.svg'))
         crop_imagem.triggered.connect(lambda: self.__crop_margem())
 
+        color_picker = QAction("Seleção de cores", self)
+        color_picker.setShortcut("Ctrl+p")
+        color_picker.setIcon(QIcon(self.__RESOURCES + 'color-picker-svgrepo-com.svg'))
+        color_picker.triggered.connect(self.__exibir_cor_selecionada)
+
         menu_editar = QMenu("&Editar", self)
         menu_editar.setStyleSheet(stylesheet)
         menu_editar.addAction(corrigir_iluminacao)
@@ -358,6 +372,8 @@ class DoImageViewer(QMainWindow):
         menu_editar.addAction(filtro_aleatorio)
         menu_editar.addSeparator()
         menu_editar.addAction(crop_imagem)
+        menu_editar.addSeparator()
+        menu_editar.addAction(color_picker)
         menu_editar.addSeparator()
         menu_editar.addAction(filtro_original)
 
@@ -520,6 +536,8 @@ class DoImageViewer(QMainWindow):
         )
         self.statusBar().setSizeGripEnabled(False)
         self.statusBar().addWidget(self.label_tamanho, 1)
+        self.statusBar().addWidget(self.label_cor, 0)
+        self.statusBar().addWidget(self.label_cor_nome, 0)
         self.statusBar().addWidget(self.label_zoom, 0)
         self.statusBar().addWidget(self.label_lista, 0)
 
@@ -739,6 +757,7 @@ class DoImageViewer(QMainWindow):
         Config().set_config('editor', 'toolbar_diretorio', str(self.__diretorio_tool_bar.isVisible()))
 
     def __adicionar_filtro(self, fid: int):
+        ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
         filtro = None
 
@@ -777,7 +796,7 @@ class DoImageViewer(QMainWindow):
             self.setStatusTip("Filtro walden")
 
         if filtro is not None:
-            filename = f'{self.__RESOURCES}filtro.jpg'
+            filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
             filtro.save(filename, quality=100)
 
             self.__viewer.adicionar_imagem(QPixmap(filename))
@@ -904,6 +923,24 @@ class DoImageViewer(QMainWindow):
         filename = f'{self.__CAMINHO_HOME}/corrigida.{ext}'
         im1.save(filename, quality=100)
         self.__viewer.adicionar_imagem(QPixmap(filename))
+
+    def __exibir_cor_selecionada(self):
+        if self.__viewer.m_pixmap:
+            r, g, b, _ = self.__viewer.get_posicao_mouse()
+            cor = '#{:02X}{:02X}{:02X}'.format(r, g, b)
+
+            self.label_cor.setText('●')
+            self.label_cor.setStyleSheet(
+                "QLabel {color: " + cor + "; font-weight:bold; padding:0px;}"
+            )
+
+            self.label_cor_nome.setText(cor)
+            self.label_cor_nome.setStyleSheet(
+                "QLabel {color: " + Theme.color_text + "; font-weight:italic; padding:0px;}"
+            )
+
+    def __copiar_cor_para_transferencia(self):
+        self.__app.clipboard().setText(self.label_cor_nome.text())
 
     @staticmethod
     def __abrir_nova_janela(caminho: str = ""):

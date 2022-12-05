@@ -19,6 +19,7 @@ class ImageViewer(QWidget):
         self.m_reference = QPoint()
         self.m_delta = QPoint()
         self.m_scale = 1.0
+        self.m_mouse_global = QPoint()
 
         # Variaveis de configuração
         self.__arrastando_imagem = False
@@ -67,6 +68,7 @@ class ImageViewer(QWidget):
 
     def mousePressEvent(self, mouse_event: QMouseEvent):
         self.m_reference = mouse_event.pos()
+        self.m_mouse_global = mouse_event.globalPosition()
         # if mouse_event.button() == Qt.MouseButton.LeftButton:
         self.__arrastando_imagem = True
 
@@ -220,6 +222,10 @@ class ImageViewer(QWidget):
 
     def mudar_antialiasing(self, on: bool):
         self.__antialiasing = on
+
+    def get_posicao_mouse(self) -> ():
+        screen = self.grab()
+        return screen.toImage().pixelColor(self.m_reference.x(), self.m_reference.y()).getRgb()
 
 
 class QLabelClick(QLabel):
