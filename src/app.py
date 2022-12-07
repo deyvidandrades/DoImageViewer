@@ -31,7 +31,7 @@ class Theme:
 class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.5.2'
+    __VERSAO = 'v1.5.3'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
@@ -356,7 +356,7 @@ class DoImageViewer(QMainWindow):
         color_picker = QAction("Seleção de cores", self)
         color_picker.setShortcut("Ctrl+p")
         color_picker.setIcon(QIcon(self.__RESOURCES + 'color-picker-svgrepo-com.svg'))
-        color_picker.triggered.connect(self.__exibir_cor_selecionada)
+        color_picker.triggered.connect(lambda: self.exibir_cor_selecionada(self.__viewer.get_posicao_mouse()))
 
         menu_editar = QMenu("&Editar", self)
         menu_editar.setStyleSheet(stylesheet)
@@ -924,9 +924,9 @@ class DoImageViewer(QMainWindow):
         im1.save(filename, quality=100)
         self.__viewer.adicionar_imagem(QPixmap(filename))
 
-    def __exibir_cor_selecionada(self):
+    def exibir_cor_selecionada(self, pos: ()):
         if self.__viewer.m_pixmap:
-            r, g, b, _ = self.__viewer.get_posicao_mouse()
+            r, g, b, _ = pos  # self.__viewer.get_posicao_mouse()
             cor = '#{:02X}{:02X}{:02X}'.format(r, g, b)
 
             self.label_cor.setText('●')

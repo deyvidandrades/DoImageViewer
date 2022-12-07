@@ -72,6 +72,10 @@ class ImageViewer(QWidget):
         # if mouse_event.button() == Qt.MouseButton.LeftButton:
         self.__arrastando_imagem = True
 
+        if mouse_event.button() == Qt.MouseButton.MiddleButton:
+            # noinspection PyUnresolvedReferences
+            self.parent().parent().exibir_cor_selecionada(self.get_posicao_mouse())
+
     def mouseReleaseEvent(self, mouse_event: QMouseEvent):
         self.__arrastando_imagem = False
 
