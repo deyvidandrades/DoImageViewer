@@ -3,7 +3,7 @@ import platform
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from math import fsum
+from math import fsum, floor
 from pathlib import Path
 from subprocess import Popen
 from threading import Timer
@@ -840,49 +840,110 @@ class DoImageViewer(QMainWindow):
     def cancelar_timer(self):
         self.__timer.cancel()
 
+    @staticmethod
+    def __crop_margem_v2(im: Image):
+        width, height = im.size
+
+        meio = floor(height / 2)
+
+        x1 = 0
+        x2 = 0
+        x3 = 0
+        x4 = 0
+
+        # START
+        pixel_anterior = (im.getpixel((0, meio)))
+
+        for col1 in range(floor(width / 2)):
+            pixel_atual = (im.getpixel((col1, meio)))
+
+            if fsum(pixel_atual) == fsum(pixel_anterior):
+                x1 += 1
+                # pixel_anterior = pixel_atual
+
+        # END
+        pixel_anterior = (im.getpixel((width - 1, meio)))
+        for col2 in range(floor(width / 2)):
+            pixel_atual = (im.getpixel(((width - 1) - col2, meio)))
+
+            if fsum(pixel_atual) <= fsum(pixel_anterior):
+                x2 += 1
+                pixel_anterior = pixel_atual
+
+        meio = floor(width / 2)
+
+        # TOP
+        pixel_anterior = (im.getpixel((meio, 0)))
+
+        for lin1 in range(floor(height / 2)):
+            pixel_atual = (im.getpixel((meio, lin1)))
+
+            if fsum(pixel_atual) == fsum(pixel_anterior):
+                x3 += 1
+                # pixel_anterior = pixel_atual
+
+        # BOT
+        pixel_anterior = (im.getpixel((meio, height - 1)))
+        for lin2 in range(floor(height / 2)):
+            pixel_atual = (im.getpixel((meio, (height - 1) - lin2)))
+
+            if fsum(pixel_atual) <= fsum(pixel_anterior):
+                x4 += 1
+                pixel_anterior = pixel_atual
+
+        return x1, width - x2, x3, height - x4
+
     def __crop_margem(self):
         ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
-        pix = im.load()
 
-        # noinspection PyUnresolvedReferences
-        anterior = pix[0, 0]
-        atual = anterior
+        # pix = im.load()
+        # # noinspection PyUnresolvedReferences
+        # anterior = pix[0, 0]
+        # atual = anterior
+        #
+        # is_inverted = fsum(anterior) > 383  # rgb(255,255,255) = 765/2 = 383
+        # contador = 0
+        #
+        # for coluna in range(0, im.size[0]):
+        #     # noinspection PyUnresolvedReferences
+        #     atual = pix[coluna, round(im.size[1] / 2)]
+        #
+        #     if fsum(atual) <= fsum(anterior) and is_inverted:
+        #         anterior = atual
+        #         contador += 1
+        #
+        #     if fsum(atual) >= fsum(anterior) and not is_inverted:
+        #         anterior = atual
+        #         contador += 1
+        #
+        # borda_vertical = False
+        #
+        # for linha in range(0, im.size[1]):
+        #     # noinspection PyUnresolvedReferences
+        #     if atual == pix[round(contador / 2), round(linha)]:
+        #         borda_vertical = True
+        #
+        # if borda_vertical:
+        #     x1 = contador
+        #     y1 = 0
+        #     x2 = im.size[0] - x1
+        #     y2 = im.size[1]
+        #
+        #     im1 = im.crop((x1, y1, x2, y2))
+        #
+        #     filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
+        #     im1.save(filename, quality=100)
+        #
+        #     self.__viewer.adicionar_imagem(QPixmap(filename))
 
-        is_inverted = fsum(anterior) > 383  # rgb(255,255,255) = 765/2 = 383
-        contador = 0
+        x, w, y, h = self.__crop_margem_v2(im)
 
-        for coluna in range(0, im.size[0]):
-            # noinspection PyUnresolvedReferences
-            atual = pix[coluna, round(im.size[1] / 2)]
+        im1 = im.crop((x, y, w, h))
+        filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
+        im1.save(filename, quality=100)
 
-            if fsum(atual) <= fsum(anterior) and is_inverted:
-                anterior = atual
-                contador += 1
-
-            if fsum(atual) >= fsum(anterior) and not is_inverted:
-                anterior = atual
-                contador += 1
-
-        borda_vertical = False
-
-        for linha in range(0, im.size[1]):
-            # noinspection PyUnresolvedReferences
-            if atual == pix[round(contador / 2), round(linha)]:
-                borda_vertical = True
-
-        if borda_vertical:
-            x1 = contador
-            y1 = 0
-            x2 = im.size[0] - x1
-            y2 = im.size[1]
-
-            im1 = im.crop((x1, y1, x2, y2))
-
-            filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
-            im1.save(filename, quality=100)
-
-            self.__viewer.adicionar_imagem(QPixmap(filename))
+        self.__viewer.adicionar_imagem(QPixmap(filename))
 
     def __corrigir_iluminacao(self, valor: int):
         ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
