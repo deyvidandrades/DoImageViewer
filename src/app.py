@@ -3,7 +3,7 @@ import platform
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from math import fsum, floor
+from math import floor
 from pathlib import Path
 from subprocess import Popen
 from threading import Timer
@@ -32,7 +32,7 @@ class Theme:
 class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.5.3'
+    __VERSAO = 'v1.5.6'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
@@ -847,10 +847,16 @@ class DoImageViewer(QMainWindow):
         self.__timer.cancel()
 
     @staticmethod
-    def __crop_margem_v2(im: Image):
+    def __verifica_igualdade_pixels(ant, atual, fator):
+        return ((ant[0] == atual[0]) and (ant[1] == atual[1]) and (ant[2] == atual[2])) or \
+            ((abs(ant[0] - atual[0]) <= fator) and (abs(ant[1] - atual[1]) <= fator) and (
+                abs(ant[2] - atual[2])) <= fator)
+
+    def __cut_image(self, im: Image, fator=3) -> (int, int, int, int):
         width, height = im.size
 
-        meio = floor(height / 2)
+        metade_vertical = floor(height / 2)
+        metade_horizontal = floor(width / 2)
 
         x1 = 0
         x2 = 0
@@ -858,44 +864,56 @@ class DoImageViewer(QMainWindow):
         x4 = 0
 
         # START
-        pixel_anterior = (im.getpixel((0, meio)))
+        col = 1
+        while col < floor(width / 2):
+            pixel_anterior = im.getpixel((col - 1, metade_vertical))
+            pixel_atual = im.getpixel((col, metade_vertical))
 
-        for col1 in range(floor(width / 2)):
-            pixel_atual = (im.getpixel((col1, meio)))
-
-            if fsum(pixel_atual) == fsum(pixel_anterior):
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x1 += 1
-                # pixel_anterior = pixel_atual
+            else:
+                break
+
+            col += 1
 
         # END
-        pixel_anterior = (im.getpixel((width - 1, meio)))
-        for col2 in range(floor(width / 2)):
-            pixel_atual = (im.getpixel(((width - 1) - col2, meio)))
+        col = width - 2
+        while col > floor(width / 2):
+            pixel_anterior = im.getpixel((col + 1, metade_vertical))
+            pixel_atual = im.getpixel((col, metade_vertical))
 
-            if fsum(pixel_atual) <= fsum(pixel_anterior):
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x2 += 1
-                pixel_anterior = pixel_atual
+            else:
+                break
 
-        meio = floor(width / 2)
+            col -= 1
 
         # TOP
-        pixel_anterior = (im.getpixel((meio, 0)))
+        lin = 1
+        while lin < floor(height / 2):
+            pixel_anterior = im.getpixel((metade_horizontal, lin - 1))
+            pixel_atual = im.getpixel((metade_horizontal, lin))
 
-        for lin1 in range(floor(height / 2)):
-            pixel_atual = (im.getpixel((meio, lin1)))
-
-            if fsum(pixel_atual) == fsum(pixel_anterior):
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x3 += 1
-                # pixel_anterior = pixel_atual
+            else:
+                break
+
+            lin += 1
 
         # BOT
-        pixel_anterior = (im.getpixel((meio, height - 1)))
-        for lin2 in range(floor(height / 2)):
-            pixel_atual = (im.getpixel((meio, (height - 1) - lin2)))
+        lin = height - 2
+        while lin > floor(height / 2):
+            pixel_anterior = im.getpixel((metade_horizontal, lin + 1))
+            pixel_atual = im.getpixel((metade_horizontal, lin))
 
-            if fsum(pixel_atual) <= fsum(pixel_anterior):
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x4 += 1
-                pixel_anterior = pixel_atual
+            else:
+                break
+
+            lin -= 1
 
         return x1, width - x2, x3, height - x4
 
@@ -903,47 +921,7 @@ class DoImageViewer(QMainWindow):
         ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
 
-        # pix = im.load()
-        # # noinspection PyUnresolvedReferences
-        # anterior = pix[0, 0]
-        # atual = anterior
-        #
-        # is_inverted = fsum(anterior) > 383  # rgb(255,255,255) = 765/2 = 383
-        # contador = 0
-        #
-        # for coluna in range(0, im.size[0]):
-        #     # noinspection PyUnresolvedReferences
-        #     atual = pix[coluna, round(im.size[1] / 2)]
-        #
-        #     if fsum(atual) <= fsum(anterior) and is_inverted:
-        #         anterior = atual
-        #         contador += 1
-        #
-        #     if fsum(atual) >= fsum(anterior) and not is_inverted:
-        #         anterior = atual
-        #         contador += 1
-        #
-        # borda_vertical = False
-        #
-        # for linha in range(0, im.size[1]):
-        #     # noinspection PyUnresolvedReferences
-        #     if atual == pix[round(contador / 2), round(linha)]:
-        #         borda_vertical = True
-        #
-        # if borda_vertical:
-        #     x1 = contador
-        #     y1 = 0
-        #     x2 = im.size[0] - x1
-        #     y2 = im.size[1]
-        #
-        #     im1 = im.crop((x1, y1, x2, y2))
-        #
-        #     filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
-        #     im1.save(filename, quality=100)
-        #
-        #     self.__viewer.adicionar_imagem(QPixmap(filename))
-
-        x, w, y, h = self.__crop_margem_v2(im)
+        x, w, y, h = self.__cut_image(im, 4)
 
         im1 = im.crop((x, y, w, h))
         filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
