@@ -15,6 +15,7 @@ from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu, QLabel, QHBoxLayout, QWidget, QFileDialog, QApplication, QToolBar, \
     QSizePolicy, QMessageBox
+from showinfm import show_in_file_manager
 
 from src.core.config import Config
 from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
@@ -252,6 +253,10 @@ class DoImageViewer(QMainWindow):
         menu_abrir_em_janela.setShortcut("Ctrl+Shift+O")
         menu_abrir_em_janela.triggered.connect(self.__abrir_foto_nova_janela)
 
+        menu_abrir_file_manager = QAction("Mostrar na pasta", self)
+        menu_abrir_file_manager.setShortcut("Ctrl+Shift+F")
+        menu_abrir_file_manager.triggered.connect(self.__abrir_file_manager)
+
         salvar_foto = QAction("Salvar", self)
         salvar_foto.setShortcut("Ctrl+S")
         salvar_foto.triggered.connect(self.__salvar_imagem)
@@ -271,6 +276,7 @@ class DoImageViewer(QMainWindow):
         menu_arquivo.addSeparator()
         menu_arquivo.addAction(menu_abrir_janela)
         menu_arquivo.addMenu(menu_abrir_recentes)
+        menu_arquivo.addAction(menu_abrir_file_manager)
         menu_arquivo.addSeparator()
         menu_arquivo.addAction(salvar_foto)
         menu_arquivo.addAction(salvar_foto_como)
@@ -1023,6 +1029,9 @@ class DoImageViewer(QMainWindow):
 
         if filename != "":
             self.__abrir_nova_janela(filename)
+
+    def __abrir_file_manager(self):
+        show_in_file_manager(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
 
     def __editar_gimp(self):
         try:
