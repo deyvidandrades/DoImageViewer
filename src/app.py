@@ -32,7 +32,7 @@ class Theme:
 class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.5.6'
+    __VERSAO = 'v1.5.7'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
@@ -921,7 +921,7 @@ class DoImageViewer(QMainWindow):
         ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
 
-        x, w, y, h = self.__cut_image(im, 4)
+        x, w, y, h = self.__cut_image(im, 1)
 
         im1 = im.crop((x, y, w, h))
         filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
