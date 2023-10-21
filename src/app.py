@@ -872,6 +872,7 @@ class DoImageViewer(QMainWindow):
             if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x1 += 1
             else:
+                x1 += 1
                 break
 
             col += 1
@@ -885,6 +886,7 @@ class DoImageViewer(QMainWindow):
             if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x2 += 1
             else:
+                x2 += 1
                 break
 
             col -= 1
@@ -898,6 +900,7 @@ class DoImageViewer(QMainWindow):
             if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x3 += 1
             else:
+                x3 += 1
                 break
 
             lin += 1
@@ -911,6 +914,7 @@ class DoImageViewer(QMainWindow):
             if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
                 x4 += 1
             else:
+                x4 += 1
                 break
 
             lin -= 1
@@ -921,7 +925,7 @@ class DoImageViewer(QMainWindow):
         ext = self.__info_dir["lista"][self.__info_dir["indice"]].split('.')[1]
         im = Image.open(f'{self.__info_dir["path"]}{self.__info_dir["lista"][self.__info_dir["indice"]]}')
 
-        x, w, y, h = self.__cut_image(im, 1)
+        x, w, y, h = self.__cut_image(im)
 
         im1 = im.crop((x, y, w, h))
         filename = f'{self.__CAMINHO_HOME}/cropped.{ext}'
