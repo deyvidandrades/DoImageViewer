@@ -32,7 +32,7 @@ class Theme:
 class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
-    __VERSAO = 'v1.5.7'
+    __VERSAO = 'v1.6.0'
     __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
 
     # noinspection PyUnresolvedReferences
