@@ -171,6 +171,164 @@ class ImageViewer(QWidget):
         except ZeroDivisionError:
             pass
 
+    @staticmethod
+    def __verifica_igualdade_pixels(ant, atual, fator):
+        # return ant == atual or \
+        #    ((abs(ant.red() - atual.red()) <= fator) and (abs(ant.green() - atual.green()) <= fator) and (
+        #        abs(ant.blue() - atual.blue())) <= fator)
+
+        red_diff = abs(ant.red() - atual.red())
+        green_diff = abs(ant.green() - atual.green())
+        blue_diff = abs(ant.blue() - atual.blue())
+        alpha_diff = abs(ant.alpha() - atual.alpha())
+
+        # Calculate the total color difference
+        total_diff = red_diff + green_diff + blue_diff + alpha_diff
+
+        return total_diff <= fator
+
+    def __cut_image(self, im: QPixmap, fator=3) -> (int, int, int, int):
+
+        fator = 50
+
+        width = im.size().width()
+        height = im.size().height()
+
+        metade_vertical = math.floor(height / 2)
+        metade_horizontal = math.floor(width / 2)
+
+        x1 = 0
+        x2 = 0
+        x3 = 0
+        x4 = 0
+
+        # START
+        col = 1
+        while col < math.floor(width / 2):
+            pixel_anterior = im.toImage().pixelColor(col - 1, metade_vertical)  # getpixel((col - 1, metade_vertical))
+            pixel_atual = im.toImage().pixelColor(col, metade_vertical)
+
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
+                x1 += 1
+            else:
+                x1 += 1
+                break
+
+            col += 1
+
+        # END
+        col = width - 2
+        while col > math.floor(width / 2):
+            pixel_anterior = im.toImage().pixelColor(col + 1, metade_vertical)
+            pixel_atual = im.toImage().pixelColor(col, metade_vertical)
+
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
+                x2 += 1
+            else:
+                x2 += 1
+                break
+
+            col -= 1
+
+        # TOP
+        lin = 1
+        while lin < math.floor(height / 2):
+            pixel_anterior = im.toImage().pixelColor(metade_horizontal, lin - 1)
+            pixel_atual = im.toImage().pixelColor(metade_horizontal, lin)
+
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
+                x3 += 1
+            else:
+                x3 += 1
+                break
+
+            lin += 1
+
+        # BOT
+        lin = height - 2
+        while lin > math.floor(height / 2):
+            pixel_anterior = im.toImage().pixelColor(metade_horizontal, lin + 1)
+            pixel_atual = im.toImage().pixelColor(metade_horizontal, lin)
+
+            if self.__verifica_igualdade_pixels(pixel_anterior, pixel_atual, fator):
+                x4 += 1
+            else:
+                x4 += 1
+                break
+
+            lin -= 1
+
+        return x1, width - x2, x3, height - x4
+
+    def __crop_margem(self, pix: QPixmap) -> QPixmap:
+        x, w, y, h = self.__cut_image(pix)
+
+        # im1 = im.crop((x, y, w, h))
+
+        return pix.copy(QRect(x, y, w, h))
+
+    @staticmethod
+    def color_difference(color1, color2, threshold):
+        red_diff = abs(color1.red() - color2.red())
+        green_diff = abs(color1.green() - color2.green())
+        blue_diff = abs(color1.blue() - color2.blue())
+        alpha_diff = abs(color1.alpha() - color2.alpha())
+        total_diff = red_diff + green_diff + blue_diff + alpha_diff
+        return total_diff <= threshold
+
+    def detect_borders(self, image, width, height, fator):
+        x1, x2, y1, y2 = 0, 0, 0, 0
+
+        # Check left border
+        col = 1
+        while col < width / 2:
+            if self.color_difference(image.pixelColor(col - 1, height // 2), image.pixelColor(col, height // 2), fator):
+                x1 += 1
+            else:
+                x1 += 1
+                break
+            col += 1
+
+        # Check right border
+        col = width - 2
+        while col > width / 2:
+            if self.color_difference(image.pixelColor(col + 1, height // 2), image.pixelColor(col, height // 2), fator):
+                x2 += 1
+            else:
+                x2 += 1
+                break
+            col -= 1
+
+        # Check top border
+        lin = 1
+        while lin < height / 2:
+            if self.color_difference(image.pixelColor(width // 2, lin - 1), image.pixelColor(width // 2, lin), fator):
+                y1 += 1
+            else:
+                y1 += 1
+                break
+            lin += 1
+
+        # Check bottom border
+        lin = height - 2
+        while lin > height / 2:
+            if self.color_difference(image.pixelColor(width // 2, lin + 1), image.pixelColor(width // 2, lin), fator):
+                y2 += 1
+            else:
+                y2 += 1
+                break
+            lin -= 1
+
+        return x1, width - x2, y1, height - y2
+
+    def crop_margins(self, pixmap, threshold):
+        image = pixmap.toImage()
+        width = image.width()
+        height = image.height()
+
+        x, w, y, h = self.detect_borders(image, width, height, threshold)
+        return pixmap.copy(QRect(x, y, w - x, h - y))
+
     def adicionar_imagem(self, pixmap: QPixmap) -> None:
         self.m_pixmap = pixmap
 
