@@ -93,9 +93,9 @@ class ImageViewer(QWidget):
         :return: None
         """
         if event.angleDelta().y() > 0:
-            self.__scale(.05)
+            self.__scale(.02)
         elif event.angleDelta().y() < 0:
-            self.__scale(-.05)
+            self.__scale(-.01)
 
     def __scale(self, s: float):
         # mouse_x = self.m_reference.x()
@@ -114,7 +114,7 @@ class ImageViewer(QWidget):
             #     )
             # else:
             #     self.m_delta = QPoint(0, 0)
-        elif s < 0 and self.m_scale >= .2:
+        elif s < 0 and self.m_scale >= 0:  # .2:
             self.m_scale += s  # .02
             # if not center:
             #     self.m_delta -= QPoint(
