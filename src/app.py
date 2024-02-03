@@ -560,7 +560,6 @@ class DoImageViewer(QMainWindow):
             for item in lista_files:
                 if item.split('.')[1] in self.__LISTA_EXTENSOES:
                     arquivo = item
-                    print(item)
                     break
 
         return f'{path}{arquivo}'
