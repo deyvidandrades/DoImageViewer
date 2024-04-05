@@ -179,7 +179,6 @@ class DoImageViewer(QMainWindow):
             pass
 
     def __processar_url(self, url: str) -> str:
-
         formato = None
         caminho = Path.home()
 
