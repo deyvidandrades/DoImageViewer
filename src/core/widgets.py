@@ -114,7 +114,7 @@ class ImageViewer(QWidget):
             #     )
             # else:
             #     self.m_delta = QPoint(0, 0)
-        elif s < 0 and self.m_scale >= 0:  # .2:
+        elif s < 0 <= self.m_scale:  # .2:
             self.m_scale += s  # .02
             # if not center:
             #     self.m_delta -= QPoint(

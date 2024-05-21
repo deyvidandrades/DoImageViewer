@@ -15,10 +15,11 @@ from PyQt6.QtCore import QDir, Qt, QSize, QEvent, QPoint
 from PyQt6.QtGui import QIcon, QPixmap, QCursor, QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu, QLabel, QHBoxLayout, QWidget, QFileDialog, QApplication, QToolBar, \
     QSizePolicy, QMessageBox
-from showinfm import show_in_file_manager
 
 from src.core.config import Config
 from src.core.widgets import ImageViewer, QLabelClick, SobreDialog
+
+from showinfm import show_in_file_manager
 
 
 @dataclass
@@ -998,7 +999,7 @@ class DoImageViewer(QMainWindow):
             if platform.system() == "Windows":
                 os.system(f'{os.getcwd()}/Do Image Viewer.exe "{caminho}"')
             else:
-                os.system(f'cd {os.getcwd()}; ./Do\ Image\ Viewer "{caminho}";cd;')
+                os.system(f'cd {os.getcwd()}; ./Do\\ Image\\ Viewer "{caminho}";cd;')
 
     def __abrir_foto_nova_janela(self):
         filename, _ = QFileDialog.getOpenFileName(
