@@ -34,7 +34,7 @@ class DoImageViewer(QMainWindow):
     __RESOURCES = os.getcwd() + "/src/res/"
     __CAMINHO_HOME = f'{str(Path.home())}/.DoImageViewer/'
     __VERSAO = 'v1.6.0'
-    __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif']
+    __LISTA_EXTENSOES = ['jpg', 'jpeg', 'png', 'bmp', 'tif', 'webp']
 
     # noinspection PyUnresolvedReferences
     def __init__(self, app: QApplication, caminho: str = ""):
@@ -710,7 +710,7 @@ class DoImageViewer(QMainWindow):
             self,
             "Abrir foto",
             dir_path,
-            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
+            f'Imagens ({"*."+", *.".join(self.__LISTA_EXTENSOES)})'
         )
 
         self.__carregar_imagem(filename)
@@ -721,7 +721,7 @@ class DoImageViewer(QMainWindow):
             self,
             "Abrir foto",
             Config().get_config('editor', 'caminho'),
-            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
+            f'Imagens ({"*."+", *.".join(self.__LISTA_EXTENSOES)})'
         )
 
         if filename != "":
@@ -740,7 +740,7 @@ class DoImageViewer(QMainWindow):
             self,
             "Salvar foto",
             f'{self.__info_dir["path"]}',
-            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
+            f'Imagens ({"*."+", *.".join(self.__LISTA_EXTENSOES)})'
         )
         if filename != "":
             self.__viewer.m_pixmap.save(filename, quality=100)
@@ -1006,7 +1006,7 @@ class DoImageViewer(QMainWindow):
             self,
             "Abrir foto",
             Config().get_config('editor', 'caminho'),
-            "Imagens (*.jpg *.jpeg *.png *.bmp *.tif)"
+            f'Imagens ({"*."+", *.".join(self.__LISTA_EXTENSOES)})'
         )
 
         if filename != "":
