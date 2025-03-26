@@ -7,6 +7,7 @@ from math import floor
 from pathlib import Path
 from subprocess import Popen
 from threading import Timer
+from urllib.error import HTTPError
 from urllib.request import urlretrieve
 
 import pilgram
@@ -189,7 +190,10 @@ class DoImageViewer(QMainWindow):
 
         if formato is not None:
             caminho = f'{self.__CAMINHO_HOME}/tmp.{formato}'
-            urlretrieve(url, caminho)
+            try:
+                urlretrieve(url, caminho)
+            except HTTPError:
+                pass
 
         return caminho
 
